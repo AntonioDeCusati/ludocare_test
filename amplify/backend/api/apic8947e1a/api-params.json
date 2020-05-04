@@ -1,0 +1,34 @@
+{
+    "paths": [
+        {
+            "name": "/items",
+            "lambdaFunction": "ludocare113d5ecb6",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "apic8947e1a",
+    "apiName": "apic8947e1a",
+    "functionArns": [
+        {
+            "lambdaFunction": "ludocare113d5ecb6"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-ludocare1-dev-143430-authRole",
+        "unAuthRoleName": "amplify-ludocare1-dev-143430-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "ludocare113d5ecb6",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

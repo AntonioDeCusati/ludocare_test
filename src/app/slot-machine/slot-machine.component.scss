@@ -1,0 +1,73 @@
+#slots_container {
+  background-color:red;
+  padding:0px;
+  margin:0px;
+  width:100%;
+  border: 2px solid red;
+  padding: 10px;
+  border-radius: 25px;
+}
+.slots {
+	font-size:100px;
+	font-family:arial,helvetica,sans-serif;
+	overflow:hidden;
+	width:100px;
+	height:100px;
+	border:1px solid black;
+	float:left; 
+  border-width: 2px;
+  border-style: ridge;
+}
+.slots .wrapper{
+	margin-top:-6px;
+	width:100px;
+  max-height: 100px !important;
+}
+.slots .slot{
+	width:100px;
+	height:100px;
+	text-align:center;
+
+}
+.slot{
+  max-height: 100px !important;
+}
+.container_min{
+  display: table;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.table_slot{
+  height: 40px;
+  width: 40px;
+  float: left;
+}
+.table_slot_container{
+  border: 1px solid rgb(0, 0, 0);
+  float: left;
+}
+.table_money {
+  color: darkgoldenrod; 
+  font-size: large;
+  font-weight: 600
+}
+.toast-x-large{
+  height: 250px;
+}
+
+
+.btn_spin{
+  background: linear-gradient(90deg,
+    rgba(131,58,180,1) 0%,
+    rgba(96,195,90,1) 30%,
+    rgba(75,205,205,1) 50%,
+    rgba(229,104,222,1) 75%, 
+    rgba(252,176,69,1) 100%);
+    }
+
+
+    .panel-header{
+      height : 455px
+    }
+

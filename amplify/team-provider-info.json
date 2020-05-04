@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-ludocare1-dev-143430-authRole",
+            "UnauthRoleArn": "arn:aws:iam::968116285935:role/amplify-ludocare1-dev-143430-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::968116285935:role/amplify-ludocare1-dev-143430-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "amplify-ludocare1-dev-143430-deployment",
+            "UnauthRoleName": "amplify-ludocare1-dev-143430-unauthRole",
+            "StackName": "amplify-ludocare1-dev-143430",
+            "StackId": "arn:aws:cloudformation:us-east-2:968116285935:stack/amplify-ludocare1-dev-143430/489b6cc0-8c71-11ea-a2ad-023ebc410218",
+            "AmplifyAppId": "d3hu8yeqgmlc5o"
+        }
+    }
+}
