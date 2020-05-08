@@ -2,9 +2,6 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Subject, Observable, interval, Subscription } from 'rxjs';
 import { WebcamImage, WebcamInitError, WebcamUtil } from 'ngx-webcam';
 
-// import entire SDK
-import * as AWS from 'aws-sdk';
-import * as S3 from 'aws-sdk/clients/s3';
 
 @Component({
   selector: 'app-camera',
@@ -13,8 +10,6 @@ import * as S3 from 'aws-sdk/clients/s3';
 })
 export class CameraComponent implements OnInit {
 
-  myBucket = 'testBuket';
-  myKey = 'myBucketKey';
   
 
   constructor() {}
@@ -54,10 +49,6 @@ export class CameraComponent implements OnInit {
       this.subscription = source.subscribe(val => { console.log("Scatta value: ", val) });
     }
 
-    AWS.config.credentials = new AWS.Credentials('AKsIAJFLTL5BJAJZ5OSUA', 'pCd9H6aFmnnn7iKd2EcHYJ6Wkeb9AAEZbuXPLkNJ');
-    AWS.config.region = 'UE';
-    let s3 = new S3;
-    s3.listBuckets(function(err, data) { console.log(err, data); });
   }
 
   ngOnDestroy() {
