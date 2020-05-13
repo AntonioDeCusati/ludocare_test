@@ -1,0 +1,6 @@
+{
+  "/api": {
+    "target": "http://www.antoniodecusati.it",
+    "secure": false
+  }
+}

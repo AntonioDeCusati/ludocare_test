@@ -7,8 +7,6 @@ import { environment } from './environments/environment';
 import 'hammerjs';
 
 
-import awsconfig from './aws-exports';
-
 if (environment.production) {
   enableProdMode();
 }
