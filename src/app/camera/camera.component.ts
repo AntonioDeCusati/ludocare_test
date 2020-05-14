@@ -16,10 +16,11 @@ export class CameraComponent implements OnInit {
   @Input() public height: number = 350;
   @Input() public width: number = 350;
   @Input() public subscribeCamera = true
+  
 
   public errors: string[] = [];
   subscription: Subscription;
-  intervalId: number;
+  intervalTime: number = 5000;
 
   constructor(private renderer: Renderer2) { }
 
@@ -31,7 +32,16 @@ export class CameraComponent implements OnInit {
 
   ngAfterViewInit(): void {
     this.loadJScript()
-    
+    //if (this.subscribeCamera) {
+      const source = interval(this.intervalTime);
+      this.subscription = source.subscribe(val => { 
+        if(this.detectionsFace.nativeElement.value && this.detectionsFace.nativeElement.value.length>0){
+        //Arriva così 
+        //this.detectionsFace.nativeElement.value
+        
+        }
+      });
+    //}
 
   }
 
@@ -57,5 +67,50 @@ export class CameraComponent implements OnInit {
 
   }
 
+
+/*
+*L'elemento che viene ritornato ha questa struttura
+[
+   {
+      "detection":{
+         "_imageDims":{},
+         "_score":0.9119463442246124,
+         "_classScore":0.9119463442246124,
+         "_className":"",
+         "_box":{}
+      },
+      "landmarks":{
+         "_imgDims":{},
+         "_shift":{},
+         "_positions":[]
+      },
+      "unshiftedLandmarks":{
+         "_imgDims":{},
+         "_shift":{},
+         "_positions":[]
+      },
+      "alignedRect":{
+         "_imageDims":{},
+         "_score":0.9119463442246124,
+         "_classScore":0.9119463442246124,
+         "_className":"",
+         "_box":{}
+      },
+      "expressions":{
+         "neutral":0.9825541973114014,
+         "happy":0.000782362709287554,
+         "sad":0.008716258220374584,
+         "angry":0.0027394951321184635,
+         "fearful":0.00006848552584415302,
+         "disgusted":0.00003461333108134568,
+         "surprised":0.00510454410687089
+      },
+      "gender":"male",
+      "genderProbability":0.9814203381538391,
+      "age":34.503570556640625,
+      "descriptor":{}
+   }
+]
+*/
   
 }

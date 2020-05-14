@@ -45,10 +45,10 @@
     <div class="col-6">
       <div class="card">
         <div class="card-header">
-          <h4 class="card-title text-center">Input</h4>
+          <h4 class="card-title text-center">Input/Output</h4>
         </div>
         <div class="card-body">
-          <app-camera [width]=550 [height]=550 [subscribeCamera] = false></app-camera>
+          <app-camera (metadataFace)=metadataFace [width]=550 [height]=550 [subscribeCamera] = false></app-camera>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@
           <h4 class="card-title text-center">Output</h4>
         </div>
         <div class="card-body">
-          <app-camera [width]=550 [height]=550 [subscribeCamera] = false></app-camera>
+         {{metadataFace | json}}
         </div>
       </div>
     </div>

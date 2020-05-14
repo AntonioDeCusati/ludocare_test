@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import * as Chartist from 'chartist';
 import { WebcamImage } from 'ngx-webcam';
 
@@ -58,6 +58,9 @@ export class DashboardComponent implements OnInit {
       return "rgb(" + r + ", " + g + ", " + b + ")";
     }
   }
+
+  @Input() public metadataFace : any;
+  
   constructor() { }
 
   ngOnInit() {
