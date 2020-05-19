@@ -58,7 +58,9 @@
           <h4 class="card-title text-center">Output</h4>
         </div>
         <div class="card-body">
-         {{metadataFace | json}}
+         <ul>
+           <li *ngFor="let face of faces">{{face | json }}</li>
+         </ul>
         </div>
       </div>
     </div>

@@ -17,11 +17,87 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
 
-
+    
 </head>
 <body>
   <app-root>
   </app-root>
 </body>
 
+  
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
+
+  <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-analytics.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-firestore.js"></script>
+
+<script>
+  
+  var faceFromDB = [];
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyA320XeyhkYwbnoTY8JS96AGYskARdmerU",
+    authDomain: "ludocaredev.firebaseapp.com",
+    databaseURL: "https://ludocaredev.firebaseio.com",
+    projectId: "ludocaredev",
+    storageBucket: "ludocaredev.appspot.com",
+    messagingSenderId: "963387545552",
+    appId: "1:963387545552:web:8e2155592bc078a9ba4bd5",
+    measurementId: "G-BCQWPJBVFR"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  const db = firebase.firestore();
+  const dbUsed = 'dev';
+  //ricreare oggetto simile a quello che ritorna lui
+  var allFaces;
+</script>
+
+<!--
+  What would you like to see?
+─────────────────────────────────
+───────────────▄████████▄────────
+─────────────▄█▀▒▒▒▒▒▒▒▀██▄──────
+───────────▄█▀▒▒▒▒▒▒▒▒▒▒▒██──────
+─────────▄█▀▒▒▒▒▒▒▄▒▒▒▒▒▒▐█▌─────
+────────▄█▒▒▒▒▒▒▒▒▀█▒▒▒▒▒▐█▌─────
+───────▄█▒▒▒▒▒▒▒▒▒▒▀█▒▒▒▄██──────
+──────▄█▒▒▒▒▒▒▒▒▒▒▒▒▀█▒▄█▀█▄─────
+─────▄█▒▒▒▒▒▒▒▒▒▒▒▒▒▒██▀▒▒▒█▄────
+────▄█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█▄───
+───▄█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█▄──
+──▄█▒▒▒▄██████▄▒▒▒▒▄█████▄▒▒▒▒█──
+──█▒▒▒█▀░░░░░▀█─▒▒▒█▀░░░░▀█▒▒▒█──
+──█▒▒▒█░░▄░░░░▀████▀░░░▄░░█▒▒▒█──
+▄███▄▒█▄░▐▀▄░░░░░░░░░▄▀▌░▄█▒▒███▄
+█▀░░█▄▒█░▐▐▀▀▄▄▄─▄▄▄▀▀▌▌░█▒▒█░░▀█
+█░░░░█▒█░▐▐──▄▄─█─▄▄──▌▌░█▒█░░░░█
+█░▄░░█▒█░▐▐▄─▀▀─█─▀▀─▄▌▌░█▒█░░▄░█
+█░░█░█▒█░░▌▄█▄▄▀─▀▄▄█▄▐░░█▒█░█░░█
+█▄░█████████▀░░▀▄▀░░▀█████████░▄█
+─██▀░░▄▀░░▀░░▀▄░░░▄▀░░▀░░▀▄░░▀██
+██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█
+█░▄░░░░░░░░░░░░░░░░░░░░░░░░░░░▄░█
+█░▀█▄░░░░░░░░░░░░░░░░░░░░░░░▄█▀░█
+█░░█▀███████████████████████▀█░░█
+█░░█────█───█───█───█───█────█░░█
+█░░▀█───█───█───█───█───█───█▀░░█
+█░░░▀█▄▄█▄▄▄█▄▄▄█▄▄▄█▄▄▄█▄▄█▀░░░█
+▀█░░░█──█───█───█───█───█──█░░░█▀
+─▀█░░▀█▄█───█───█───█───█▄█▀░░█▀─
+──▀█░░░▀▀█▄▄█───█───█▄▄█▀▀░░░█▀──
+───▀█░░░░░▀▀█████████▀▀░░░░░█▀───
+────▀█░░░░░▄░░░░░░░░░▄░░░░░█▀────
+─────▀██▄░░░▀▀▀▀▀▀▀▀▀░░░▄██▀─────
+────────▀██▄▄░░░░░░░▄▄██▀────────
+───────────▀▀███████▀▀───────────
+
+Powered by: DekuDev
+-->
 </html>

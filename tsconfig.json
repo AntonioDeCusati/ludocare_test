@@ -12,6 +12,7 @@
     "importHelpers": true,
     "target": "es5",
     "types": ["node"],
+    "skipLibCheck": true,
     "typeRoots": [
       "node_modules/@types"
     ],
