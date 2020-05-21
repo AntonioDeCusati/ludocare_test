@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  firebase : {
+  firebaseConfig : {
     apiKey: "AIzaSyA320XeyhkYwbnoTY8JS96AGYskARdmerU",
     authDomain: "ludocaredev.firebaseapp.com",
     databaseURL: "https://ludocaredev.firebaseio.com",
