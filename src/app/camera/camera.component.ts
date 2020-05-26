@@ -10,8 +10,8 @@ var detectionsFace = document.getElementById('detectionsFace')
 })
 export class CameraComponent implements OnInit {
 
-  @ViewChild('video') videoElement: ElementRef;
-  @ViewChild('detectionsFace') detectionsFace: ElementRef;
+  @ViewChild('video', {static: false}) videoElement: ElementRef;
+  @ViewChild('detectionsFace', {static: false}) detectionsFace: ElementRef;
 
   @Input() public height: number = 350;
   @Input() public width: number = 350;

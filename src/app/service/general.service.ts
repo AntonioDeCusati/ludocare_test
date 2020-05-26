@@ -1,14 +1,76 @@
 import { Injectable } from '@angular/core';
-import * as firebase from "firebase/app";
-import { Router } from '@angular/router';
-import "firebase/auth";
-import "firebase/firestore";
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentSnapshot, DocumentReference } from '@angular/fire/firestore';
+
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeneralService {
+
+  private dbPath = '/test';
+  users: any = null;
+
+  connectionDb : AngularFirestore = null;
+  usersRef: AngularFirestoreCollection<any> = null;
+  singleDocRef: AngularFirestoreDocument<any> = null
+
+  constructor(private db: AngularFirestore) {
+    this.usersRef = db.collection(this.dbPath);
+    this.connectionDb = db;
+  }
+
+  getUsersList(): AngularFirestoreCollection<any> {
+    return this.usersRef;
+  }
+
+/*
+{
+        id: "temp",
+        age: tempFace.age,
+        descriptor: Array.from(tempFace.descriptor),
+        score: tempFace.detection.score,
+        expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
+        gender: tempFace.gender,
+        genderProbability: tempFace.genderProbability
+}
+        */
+
+  saveLastOperation(data : any) : any {
+    return new Promise<any>((resolve, reject) =>{
+      this.usersRef
+          .add(data)
+          .then(res => {}, err => reject(err));
+  });
+
+    
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
   const firebaseConfig = {
     apiKey: "AIzaSyA320XeyhkYwbnoTY8JS96AGYskARdmerU",

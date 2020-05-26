@@ -1,0 +1,70 @@
+p{
+    margin-bottom: 1px;
+}
+
+.centerVideo{
+    text-align: center;
+}
+
+.dispTable{
+    display: table;
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.angry{
+    color:white;
+    background-color: rgba(189, 22, 22, 0.8);
+}
+
+.disgusted {
+    color:black;
+    background-color: rgba(120, 163, 51, 0.8);
+}
+
+.fearful{
+    color:white;
+    background-color:rgb(60, 61, 57, 0.8);
+}
+
+.happy {
+    color:black;
+    background-color:rgba(47, 238, 22, 0.8);
+}
+
+.neutral {
+    color:black;
+    background-color:rgb(148, 148, 148, 0.8);
+}
+
+.sad {
+    color:white;
+    background-color:rgb(12, 83, 150, 0.8);
+}
+
+.surprised {
+    color:black;
+    background-color:rgb(219, 203, 61, 0.8);
+}
+
+.table > thead > tr > th {
+    padding: 12px 7px;
+    vertical-align: top;
+    text-align: center;
+    border-right: 1px solid rgba(0, 0, 0, 0.125);
+    border-left: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.my-custom-scrollbar {
+    position: relative;
+    overflow: auto;
+    }
+    .table-wrapper-scroll-y {
+    display: block;
+    }
+
+.col-camera{
+    min-width: 610px !important;
+}

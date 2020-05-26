@@ -9,7 +9,6 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { ToastrService } from 'ngx-toastr';
-import { WebcamImage } from 'ngx-webcam';
 
 @Component({
   selector: "slot-machine",
@@ -17,14 +16,11 @@ import { WebcamImage } from 'ngx-webcam';
   styleUrls: ["./slot-machine.component.scss"]
 })
 export class SlotMachineComponent implements AfterViewInit {
-  @ViewChild("slotA", { read: ElementRef }) slotA: ElementRef;
-  @ViewChild("slotB", { read: ElementRef }) slotB: ElementRef;
-  @ViewChild("slotC", { read: ElementRef }) slotC: ElementRef;
+  @ViewChild("slotA", {static: false}) slotA: ElementRef;
+  @ViewChild("slotB", {static: false}) slotB: ElementRef;
+  @ViewChild("slotC", {static: false}) slotC: ElementRef;
   coin: number = 0;
   buttonDisable = true;
-
-  // latest snapshot
-  public webcamImage: WebcamImage = null;
 
 
   // options for slots
@@ -179,12 +175,6 @@ export class SlotMachineComponent implements AfterViewInit {
 
   }
 
-
-
-  handleImage(webcamImage: WebcamImage) {
-    this.webcamImage = webcamImage;
-    //webcamImage.imageAsDataUrl
-  }
 
   _createRange(number) {
     var items: number[] = [];

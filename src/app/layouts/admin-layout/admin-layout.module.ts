@@ -16,7 +16,6 @@ import { ToastrModule } from 'ngx-toastr';
 import { UpgradeComponent } from '../../upgrade/upgrade.component';
 import { SlotMachineComponent } from '../../slot-machine/slot-machine.component';
 import { CameraComponent } from '../../camera/camera.component';
-import { WebcamModule } from 'ngx-webcam';
 
 @NgModule({
   imports: [
@@ -25,8 +24,7 @@ import { WebcamModule } from 'ngx-webcam';
     FormsModule,
     ChartsModule,
     NgbModule,
-    ToastrModule.forRoot(),
-    WebcamModule
+    ToastrModule.forRoot()
   ],
   declarations: [
     SlotMachineComponent,

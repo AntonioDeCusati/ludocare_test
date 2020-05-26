@@ -33,6 +33,8 @@ var faceMatcher;
 var labeledDescriptors = []
 var inserted = false;
 var volte = 0;
+var volteVisoNonTrovato = 0;
+var sessionOpened = false;
 
 function startVideo() {
   navigator.mediaDevices.getUserMedia({ video: true })
@@ -57,7 +59,7 @@ function refreshData() {
         faceFromDB.push(labeled)
       });
 
-      console.log(faceFromDB);
+      // console.log(faceFromDB);
     }
   );
 }
@@ -79,10 +81,38 @@ video.addEventListener('play', () => {
     refreshData();
 
     var detections = await faceapi.detectAllFaces(video, option).withFaceLandmarks().withFaceExpressions().withAgeAndGender().withFaceDescriptors()
+    console.log(detections.length);
+    if (detections.length === 0) {
+      console.log("Volte volto non trovato: ", volteVisoNonTrovato)
+      console.log("L'ultimo utente è stato: ", lastPerson);
+      if (volteVisoNonTrovato > 3 && lastPerson) {
+        // devo terminare la sessione dell'utente corrente
+        let currentMill = new Date().getTime();
+        let faceRefLast = db.collection(dbUsed).doc(lastPerson);
+        faceRefLast.get()
+          .then(doc => {
+            if (!doc.exists) {
+              console.log('No such document!');
+            } else {
+              let totalMinutes = (currentMill - doc.data().lastDetect) + doc.data().totalMinutes;
+              faceRefLast.update({ totalMinutes: totalMinutes });
+              let totMinCovert = convertMiliseconds(totalMinutes, "m")
+              console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
 
-    if (!detections.length) {
+              sessionOpened = false;
+              lastPerson = undefined;
+            }
+          })
+          .catch(err => {
+            console.log('Error getting document', err);
+          });
+
+      } else {
+        volteVisoNonTrovato += 1;
+      }
       return
     } else {
+      volteVisoNonTrovato = 0;
       detectionsFace.innerHTML = "";
       detectionsFace.value = JSON.stringify(detections);
     }
@@ -108,57 +138,158 @@ video.addEventListener('play', () => {
 
           let tempFace = resizedDetections[0];
           if (resizedDetections[0].detection.score > 0.96) {
-           /* db.collection(dbUsed).add(
-              {
-                id: "temp",
-                age: tempFace.age,
-                descriptor: Array.from(tempFace.descriptor),
-                score: tempFace.detection.score,
-                expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
-                gender: tempFace.gender,
-                genderProbability: tempFace.genderProbability
-              }
-            ).then(ref => {
-              console.log('Added document with ID: ', ref.id);
-              let faceRef = db.collection(dbUsed).doc(ref.id);
-              faceRef.update({ id: ref.id, label: ref.id });
-            });*/
+            let currentMill = new Date().getTime();
+            /* db.collection(dbUsed).add(
+               {
+                 id: "temp",
+                 age: tempFace.age,
+                 descriptor: Array.from(tempFace.descriptor),
+                 score: tempFace.detection.score,
+                 expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
+                 gender: tempFace.gender,
+                 genderProbability: tempFace.genderProbability,
+                 lastDetect: currentMill,
+                 totalMinutes : 0
+               }
+             ).then(ref => {
+               console.log('Added document with ID: ', ref.id);
+               let faceRef = db.collection(dbUsed).doc(ref.id);
+               faceRef.update({ id: ref.id, label: ref.id });
+             });*/
           }
         }
       } else {
         // il viso è stato riconosciuto
 
-
-
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
         drawBox.draw(canvas)
         faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+        console.log(lastPerson);
+
+        if (!lastPerson) {
+          lastPerson = bestMatch.label;
+
+        } else {
+
+          if (lastPerson === bestMatch.label) {
+            console.log("Stessa persona, aggiorno emozioni :", bestMatch.label)
+            //aggiorno solo le emozioni TODO
+
+            lastPerson = bestMatch.label;
+
+            if (!sessionOpened) {
+              //apro Sessione
+              sessionOpened = true;
+              let currentMill = new Date().getTime();
+              let faceRefLast = db.collection(dbUsed).doc(lastPerson);
+              faceRefLast.get()
+                .then(doc => {
+                  if (!doc.exists) {
+                    console.log('No such document!');
+                  } else {
+                    let faceRefNew = db.collection(dbUsed).doc(lastPerson);
+                    faceRefNew.update({ lastDetect: currentMill });
+                  }
+                })
+                .catch(err => {
+                  console.log('Error getting document', err);
+                });
+
+            }
+          } else {
+            //salvo entrata per per la nuova persona e l'uscita per la vecchia
+            console.log("Persona diversa che è stata gia riconosciuta, salvo le opearioni")
+
+            let currentMill = new Date().getTime();
+            let faceRefLast = db.collection(dbUsed).doc(lastPerson);
+            faceRefLast.get()
+              .then(doc => {
+                if (!doc.exists) {
+                  console.log('No such document!');
+                } else {
+                  let totalMinutes = (currentMill - doc.data().lastDetect) + doc.data().totalMinutes;
+                  faceRefLast.update({ totalMinutes: totalMinutes });
+                  let totMinCovert = convertMiliseconds(totalMinutes, "m")
+                  console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
+
+
+                  lastPerson = bestMatch.label;
+                  let faceRefNew = db.collection(dbUsed).doc(lastPerson);
+                  faceRefNew.update({ lastDetect: currentMill });
+                }
+              })
+              .catch(err => {
+                console.log('Error getting document', err);
+              });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          }
+        }
+
+
       }
 
     } else {
       //salvo la prima faccia sul db
-      console.log(faceFromDB);
-
       let tempFace = resizedDetections[0];
       if (tempFace.detection.score > 0.90) {
-       /* db.collection(dbUsed).add(*
-          {
-            id: "temp",
-            age: tempFace.age,
-            descriptor: Array.from(tempFace.descriptor),
-            score: tempFace.detection.score,
-            expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
-            gender: tempFace.gender,
-            genderProbability: tempFace.genderProbability
-          }
-        ).then(ref => {
-          console.log('Added document with ID: ', ref.id);
-          let faceRef = db.collection(dbUsed).doc(ref.id);
-          faceRef.update({ id: ref.id, label: ref.id });
-        });*/
+        /* db.collection(dbUsed).add(*
+           {
+             id: "temp",
+             age: tempFace.age,
+             descriptor: Array.from(tempFace.descriptor),
+             score: tempFace.detection.score,
+             expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
+             gender: tempFace.gender,
+             genderProbability: tempFace.genderProbability
+           }
+         ).then(ref => {
+           console.log('Added document with ID: ', ref.id);
+           let faceRef = db.collection(dbUsed).doc(ref.id);
+           faceRef.update({ id: ref.id, label: ref.id });
+         });*/
       }
     }
 
 
   }, 1500) //metterò 250 forse
 })
+
+
+function convertMiliseconds(miliseconds, format) {
+  var days, hours, minutes, seconds, total_hours, total_minutes, total_seconds;
+
+  total_seconds = parseInt(Math.floor(miliseconds / 1000));
+  total_minutes = parseInt(Math.floor(total_seconds / 60));
+  total_hours = parseInt(Math.floor(total_minutes / 60));
+  days = parseInt(Math.floor(total_hours / 24));
+
+  seconds = parseInt(total_seconds % 60);
+  minutes = parseInt(total_minutes % 60);
+  hours = parseInt(total_hours % 24);
+
+  switch (format) {
+    case 's':
+      return total_seconds;
+    case 'm':
+      return total_minutes;
+    case 'h':
+      return total_hours;
+    case 'd':
+      return days;
+    default:
+      return { d: days, h: hours, m: minutes, s: seconds };
+  }
+};
