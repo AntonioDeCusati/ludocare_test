@@ -1,14 +1,12 @@
-import {
-  Component,
-  Input,
-  ElementRef,
-  ViewChild,
-  TemplateRef,
-  QueryList,
-  OnInit,
-  AfterViewInit
-} from "@angular/core";
+import { Component, Input, ElementRef, ViewChild, TemplateRef, QueryList, OnInit, AfterViewInit, Renderer2 } from "@angular/core";
 import { ToastrService } from 'ngx-toastr';
+import { GeneralService } from '../service/general.service';
+import { map } from 'rxjs/operators';
+import { CameraComponent } from '../camera/camera.component';
+import { CountdownComponent } from 'ngx-countdown';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { Template } from '@angular/compiler/src/render3/r3_ast';
+
 
 @Component({
   selector: "slot-machine",
@@ -16,11 +14,23 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ["./slot-machine.component.scss"]
 })
 export class SlotMachineComponent implements AfterViewInit {
-  @ViewChild("slotA", {static: false}) slotA: ElementRef;
-  @ViewChild("slotB", {static: false}) slotB: ElementRef;
-  @ViewChild("slotC", {static: false}) slotC: ElementRef;
+  @ViewChild("slotA", { static: false }) slotA: ElementRef;
+  @ViewChild("slotB", { static: false }) slotB: ElementRef;
+  @ViewChild("slotC", { static: false }) slotC: ElementRef;
+  @ViewChild(CameraComponent, { static: false }) cameraComponent: CameraComponent;
+  @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
+
+  config;
   coin: number = 0;
+  durationSessionConfig : number = 600;
   buttonDisable = true;
+  sessionActive = false;
+  counterMin = 0;
+  counterSec = 0;
+  lockAdmin = false;
+  firstPlay = true;
+  template = '<img class="custom-spinner-template" src="./assets/img/loading2.gif">';
+  
 
 
   // options for slots
@@ -37,7 +47,10 @@ export class SlotMachineComponent implements AfterViewInit {
     6, 4, 2, 1, 1, 1
   ];
 
-  constructor(private toastr: ToastrService) { }
+  constructor(private toastr: ToastrService, private generalService: GeneralService,
+    private renderer: Renderer2,private spinnerService: Ng4LoadingSpinnerService) {
+      this.spinnerService.show();
+     }
 
   ngAfterViewInit() {
     this.addSlots(this.slotA);
@@ -45,13 +58,29 @@ export class SlotMachineComponent implements AfterViewInit {
     this.addSlots(this.slotC);
   }
 
-  addCoin(number) {
-    this.coin += number;
+  addCoin(coin) {
+    this.coin += coin;
     this.buttonDisable = false;
+
+    let idCurrentFace = this.cameraComponent.detectionsFace.nativeElement.dataset['value']
+    if (idCurrentFace) {
+      this.generalService.addMoney(idCurrentFace, coin)
+
+      //apro sessione
+      let sessionActive = this.generalService.openSession(idCurrentFace)
+    }
+
+    this._startSession(this.durationSessionConfig)
+    
+
   }
   reset() {
     this.coin = 0;
     this.buttonDisable = true;
+    this.lockAdmin = false;
+    this.firstPlay = true;
+    this.config = { leftTime: 0 }
+    console.log("Non salvo il tempo trascorso per questa sessione")
   }
 
   spin() {
@@ -70,6 +99,7 @@ export class SlotMachineComponent implements AfterViewInit {
         toastClass: "alert alert-danger alert-with-icon",
         positionClass: 'toast-top-right'
       });
+      //this.generalService.closeSession()
     }
     if (this.coin === 0) {
       this.buttonDisable = true;
@@ -183,4 +213,21 @@ export class SlotMachineComponent implements AfterViewInit {
     }
     return items;
   }
+
+  _startSession(durationSession : number){
+    if (this.firstPlay) {
+      this.config = { leftTime: durationSession }
+      this.firstPlay = false;
+    }
+    setTimeout(() => {
+      console.log("Chiusura obbligatoria sessione")
+
+      //blocco tutto
+      this.lockAdmin = true;
+
+      //salvo tempo davanti maccchina sul db
+    }, durationSession*1000)
+  }
+
+  
 }

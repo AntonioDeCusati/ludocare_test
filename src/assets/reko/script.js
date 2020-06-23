@@ -8,9 +8,10 @@ Promise.all([
   // faceLandmark68TinyNet
   // tinyYolov2
 ]).then(() => {
-  console.log("Db used for getting data:", dbUsed);
+  //console.log("Db used for getting data:", dbUsed);
   refreshData();
-  startVideo()
+  startVideo();
+  console.log(document.getElementById("spinner"))
 })
 
 var detenctionModel = {
@@ -42,7 +43,7 @@ function startVideo() {
       video.srcObject = stream;
     })
     .catch(function (err0r) {
-      console.log("Something went wrong! Error: ", err0r);
+      //console.log("Something went wrong! Error: ", err0r);
     });
 
 }
@@ -59,7 +60,7 @@ function refreshData() {
         faceFromDB.push(labeled)
       });
 
-      // console.log(faceFromDB);
+      // //console.log(faceFromDB);
     }
   );
 }
@@ -81,10 +82,10 @@ video.addEventListener('play', () => {
     refreshData();
 
     var detections = await faceapi.detectAllFaces(video, option).withFaceLandmarks().withFaceExpressions().withAgeAndGender().withFaceDescriptors()
-    console.log(detections.length);
+    //console.log(detections.length);
     if (detections.length === 0) {
-      console.log("Volte volto non trovato: ", volteVisoNonTrovato)
-      console.log("L'ultimo utente è stato: ", lastPerson);
+      //console.log("Volte volto non trovato: ", volteVisoNonTrovato)
+      //console.log("L'ultimo utente è stato: ", lastPerson);
       if (volteVisoNonTrovato > 3 && lastPerson) {
         // devo terminare la sessione dell'utente corrente
         let currentMill = new Date().getTime();
@@ -92,29 +93,34 @@ video.addEventListener('play', () => {
         faceRefLast.get()
           .then(doc => {
             if (!doc.exists) {
-              console.log('No such document!');
+              //console.log('No such document!');
             } else {
               let totalMinutes = (currentMill - doc.data().lastDetect) + doc.data().totalMinutes;
               faceRefLast.update({ totalMinutes: totalMinutes });
               let totMinCovert = convertMiliseconds(totalMinutes, "m")
-              console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
+              //console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
 
               sessionOpened = false;
               lastPerson = undefined;
             }
           })
           .catch(err => {
-            console.log('Error getting document', err);
+            //console.log('Error getting document', err);
           });
-
+          lastPerson = undefined;
       } else {
         volteVisoNonTrovato += 1;
       }
       return
     } else {
       volteVisoNonTrovato = 0;
-      detectionsFace.innerHTML = "";
-      detectionsFace.value = JSON.stringify(detections);
+      detectionsFace.innerHTML = lastPerson ? lastPerson : "";
+      detectionsFace.dataset['value'] = lastPerson ? lastPerson : "";
+      //elimino lo spinner
+      if( document.getElementById("spinner").hidden === false){
+        document.getElementById("spinner").hidden = true;
+      }
+      
     }
 
     let faces = detections;
@@ -129,12 +135,12 @@ video.addEventListener('play', () => {
       if (bestMatch.label === "unknown") {
         //Faccio saltare la prima volta per non creare troppi volti qualora esistesse gia
         if (volte < 3) { //futuro 8
-          console.info("Volto non riconosciuto ma non salvato, al prossimo giro lo salvo");
+          //console.info("Volto non riconosciuto ma non salvato, al prossimo giro lo salvo");
           volte += 1;
         } else {
           volte = 0;
-          console.info("Persona sconosciuta, sto salvando tutta la faccia: ", faces[0])
-          console.log("Score: ", resizedDetections[0].detection.score)
+          //console.info("Persona sconosciuta, sto salvando tutta la faccia: ", faces[0])
+          //console.log("Score: ", resizedDetections[0].detection.score)
 
           let tempFace = resizedDetections[0];
           if (resizedDetections[0].detection.score > 0.96) {
@@ -149,10 +155,11 @@ video.addEventListener('play', () => {
                  gender: tempFace.gender,
                  genderProbability: tempFace.genderProbability,
                  lastDetect: currentMill,
-                 totalMinutes : 0
+                 totalMinutes : 0,
+                 totalMoney: 0
                }
              ).then(ref => {
-               console.log('Added document with ID: ', ref.id);
+               //console.log('Added document with ID: ', ref.id);
                let faceRef = db.collection(dbUsed).doc(ref.id);
                faceRef.update({ id: ref.id, label: ref.id });
              });*/
@@ -164,7 +171,7 @@ video.addEventListener('play', () => {
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
         drawBox.draw(canvas)
         faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-        console.log(lastPerson);
+        //console.log(lastPerson);
 
         if (!lastPerson) {
           lastPerson = bestMatch.label;
@@ -172,7 +179,7 @@ video.addEventListener('play', () => {
         } else {
 
           if (lastPerson === bestMatch.label) {
-            console.log("Stessa persona, aggiorno emozioni :", bestMatch.label)
+            //console.log("Stessa persona, aggiorno emozioni :", bestMatch.label)
             //aggiorno solo le emozioni TODO
 
             lastPerson = bestMatch.label;
@@ -185,32 +192,32 @@ video.addEventListener('play', () => {
               faceRefLast.get()
                 .then(doc => {
                   if (!doc.exists) {
-                    console.log('No such document!');
+                    //console.log('No such document!');
                   } else {
                     let faceRefNew = db.collection(dbUsed).doc(lastPerson);
                     faceRefNew.update({ lastDetect: currentMill });
                   }
                 })
                 .catch(err => {
-                  console.log('Error getting document', err);
+                  //console.log('Error getting document', err);
                 });
 
             }
           } else {
             //salvo entrata per per la nuova persona e l'uscita per la vecchia
-            console.log("Persona diversa che è stata gia riconosciuta, salvo le opearioni")
+            //console.log("Persona diversa che è stata gia riconosciuta, salvo le opearioni")
 
             let currentMill = new Date().getTime();
             let faceRefLast = db.collection(dbUsed).doc(lastPerson);
             faceRefLast.get()
               .then(doc => {
                 if (!doc.exists) {
-                  console.log('No such document!');
+                  //console.log('No such document!');
                 } else {
                   let totalMinutes = (currentMill - doc.data().lastDetect) + doc.data().totalMinutes;
                   faceRefLast.update({ totalMinutes: totalMinutes });
                   let totMinCovert = convertMiliseconds(totalMinutes, "m")
-                  console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
+                  //console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
 
 
                   lastPerson = bestMatch.label;
@@ -219,20 +226,8 @@ video.addEventListener('play', () => {
                 }
               })
               .catch(err => {
-                console.log('Error getting document', err);
+                //console.log('Error getting document', err);
               });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
           }
@@ -244,6 +239,7 @@ video.addEventListener('play', () => {
     } else {
       //salvo la prima faccia sul db
       let tempFace = resizedDetections[0];
+      let currentMill = new Date().getTime();
       if (tempFace.detection.score > 0.90) {
         /* db.collection(dbUsed).add(*
            {
@@ -253,10 +249,13 @@ video.addEventListener('play', () => {
              score: tempFace.detection.score,
              expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
              gender: tempFace.gender,
-             genderProbability: tempFace.genderProbability
+             genderProbability: tempFace.genderProbability,
+            lastDetect: currentMill,
+            totalMinutes : 0,
+            totalMoney: 0
            }
          ).then(ref => {
-           console.log('Added document with ID: ', ref.id);
+           //console.log('Added document with ID: ', ref.id);
            let faceRef = db.collection(dbUsed).doc(ref.id);
            faceRef.update({ id: ref.id, label: ref.id });
          });*/

@@ -16,6 +16,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { UpgradeComponent } from '../../upgrade/upgrade.component';
 import { SlotMachineComponent } from '../../slot-machine/slot-machine.component';
 import { CameraComponent } from '../../camera/camera.component';
+import { CountdownModule } from 'ngx-countdown';
+import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
 
 @NgModule({
   imports: [
@@ -24,7 +26,9 @@ import { CameraComponent } from '../../camera/camera.component';
     FormsModule,
     ChartsModule,
     NgbModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    CountdownModule,
+    Ng4LoadingSpinnerModule
   ],
   declarations: [
     SlotMachineComponent,

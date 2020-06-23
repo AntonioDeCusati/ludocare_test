@@ -1,5 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, Renderer2 } from '@angular/core';
-import { Subject, Observable, interval, Subscription } from 'rxjs';
+import { Subject, Observable, interval, Subscription, of } from 'rxjs';
+import { GeneralService } from '../service/general.service';
+
 
 const video = document.getElementById('video')
 var detectionsFace = document.getElementById('detectionsFace')
@@ -10,21 +12,23 @@ var detectionsFace = document.getElementById('detectionsFace')
 })
 export class CameraComponent implements OnInit {
 
-  @ViewChild('video', {static: false}) videoElement: ElementRef;
-  @ViewChild('detectionsFace', {static: false}) detectionsFace: ElementRef;
+  @ViewChild('video', {static: true}) videoElement: ElementRef;
+  @ViewChild('detectionsFace', {static: true}) detectionsFace: ElementRef;
 
   @Input() public height: number = 350;
   @Input() public width: number = 350;
   @Input() public subscribeCamera = true
+  @Output() public sessionActive = false;
   
 
   public errors: string[] = [];
   subscription: Subscription;
-  intervalTime: number = 5000;
   lastFaceDescriptor : any;
   currentFaceDescriptor : any;
+  intervalTime: number = 5000; //secondi tra un check sessione e l'altro
+  source = interval(this.intervalTime);
 
-  constructor(private renderer: Renderer2) { }
+  constructor(private renderer: Renderer2, private generalService : GeneralService) { }
 
 
   public ngOnInit(): void {
@@ -33,33 +37,40 @@ export class CameraComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadJScript()
-    if (this.subscribeCamera) {
-      const source = interval(this.intervalTime);
-      this.subscription = source.subscribe(val => { 
-        if(this.detectionsFace && this.detectionsFace.nativeElement.value && this.detectionsFace.nativeElement.value.length>0){
-        //Arriva così 
-        //this.detectionsFace.nativeElement.value
-        let faces = JSON.parse(this.detectionsFace.nativeElement.value);
-        /*console.log("Volti rilevati: ",faces.length)
-        if(faces.length == 1){
-          console.log("Deku is: ", faces[0].descriptor)
-          if(!this.currentFaceDescriptor){
-            console.info("Nessun volto in canna")
-            this.currentFaceDescriptor = faces[0].descriptor;
-          }else{
-            console.info("E' presente un volto in canna")
-            this.lastFaceDescriptor = faces[0].descriptor;
-            
-          }
-          
-        }*/
-        
-        
-        }
-      });
-    }
+    of(this.loadJScript()).toPromise().then( ()=>{
+      this.source.subscribe(val => { 
+       // console.log(window['lastPerson'])
+       // console.log(window['faceFromDB'])
 
+
+
+       //Gestione sessione
+       if(this.detectionsFace.nativeElement.dataset['value']){
+        let dataValue = this.detectionsFace.nativeElement.dataset['value'];
+        console.log("Last: " + this.lastFaceDescriptor + " - Current: " + dataValue)
+
+        if(this.lastFaceDescriptor && this.lastFaceDescriptor != dataValue){
+
+          this.generalService.closeSession(dataValue);
+          console.log("Chiudo sessione");
+
+        } 
+
+        this.lastFaceDescriptor = dataValue;
+        
+       }
+       
+      })
+    }
+    )
+    
+    this.renderer.listen(this.videoElement.nativeElement, 'play', (event) => {
+      // Do something with 'event'
+      console.log("Partito lo stream")
+    })
+
+    
+    
   }
 
   ngOnDestroy() {
@@ -70,7 +81,9 @@ export class CameraComponent implements OnInit {
   public loadJScript() {
     const scriptsArray = [
       './assets/reko/face-api.min.js',
-      './assets/reko/script.js'
+      './assets/reko/script.js',
+
+
     ]
     for (let i = 0; i < scriptsArray.length; i++) {
       const body = <HTMLDivElement>document.body;
@@ -82,7 +95,11 @@ export class CameraComponent implements OnInit {
       body.appendChild(script);
     }
 
+
   }
+
+
+  
 
 
 /*

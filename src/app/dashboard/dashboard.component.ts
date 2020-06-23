@@ -10,7 +10,7 @@ import { GeneralService } from '../service/general.service';
 })
 export class DashboardComponent implements OnInit {
  
-  @ViewChild('detectionsFace', {static: false}) detectionsFace: ElementRef;
+  @ViewChild('detectionsFace', {static: true}) detectionsFace: ElementRef;
 
   @Input() public metadataFace : any;
   usersList: any[] = [];
@@ -30,7 +30,6 @@ export class DashboardComponent implements OnInit {
         )
       )
     ).subscribe(users => {
-      console.log(users)
       this.faces = users;
     })
     

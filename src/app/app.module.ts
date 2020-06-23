@@ -9,7 +9,6 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 
-import { AppComponent } from './app.component';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
@@ -18,6 +17,9 @@ import { AngularFirestoreModule, FirestoreSettingsToken } from '@angular/fire/fi
 import { AngularFireAuthModule } from "@angular/fire/auth";
 import { environment } from '../environments/environment';
 
+import { CountdownModule } from 'ngx-countdown';
+
+import { AppComponent } from './app.component';
 @NgModule({
   imports: [
     BrowserAnimationsModule,
@@ -31,6 +33,8 @@ import { environment } from '../environments/environment';
     AngularFireAuthModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
+    CountdownModule
+    
 
   ],
   declarations: [

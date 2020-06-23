@@ -1,96 +1,104 @@
-<div class="panel-header">
-    <div class="header text-center row">
-        <div class="col-sm-12 col-md-6">
-            <h2 class="title">Slot Machine</h2>
-        </div>
-        <div class=" col-sm-12 col-md-6">
-            <app-camera  [width]=350 [height]=260 [subscribeCamera]=false>
-            </app-camera>
-        </div>
+<div>
+    <ng4-loading-spinner id="spinner" [timeout]="10000000"
+     [zIndex]="999"> </ng4-loading-spinner>
+    <div class="panel-header">
+        <div class="header text-center row">
+            <div class="col-sm-12 col-md-6">
+                <h2 class="title">Slot Machine</h2>
+                <br>
+                <h4 class="title">Timer: <countdown #cd [config]="config"></countdown>
+                </h4>
+                <input type="button" class="btn btn-warning" value="Reset by Admin" id="reset" style="margin-top:4px;"
+                    (click)="reset()">
+            </div>
+            <div class=" col-sm-12 col-md-6">
+                <app-camera [width]=350 [height]=260 [subscribeCamera]=false>
+                </app-camera>
+            </div>
 
+        </div>
     </div>
-</div>
-<div class="main-content">
-    <div class="row">
-        <div class="col-xs-12 col-md-7">
-            <div class="card">
-                <div class="card-header" style="text-align:center">
-                    <h4 class="card-title text-center">Coin : {{coin}}</h4>
-                    <input type="button" class="btn btn-primary" value="Add 10 coin" id="add10" style="margin-top:4px;"
-                        (click)="addCoin(10)">
-                    <input type="button" class="btn btn-primary" value="Add 100 coin" id="add100"
-                        style="margin-top:4px;" (click)="addCoin(100)">
-                </div>
-                <div class="card-body">
-                    <div id="slots_container">
-                        <div class="container_min">
-                            <div class="slots" id="slots_a">
-                                <div class="wrapper" #slotA></div>
-                            </div>
-                            <div class="slots" id="slots_b">
-                                <div class="wrapper" #slotB></div>
-                            </div>
-                            <div class="slots" id="slots_c">
-                                <div class="wrapper" #slotC></div>
-                            </div>
-                            <div style="text-align:center">
-                                <input type="button" class="btn btn-info" value="SPIN" id="spin" style="margin-top:4px;"
-                                    (click)="spin()" [disabled]="buttonDisable">
-                                <input type="button" class="btn btn-warning" value="Reset" id="reset"
-                                    style="margin-top:4px;" (click)="reset()">
+    <div class="main-content">
+        <div class="row">
+            <div class="col-xs-12 col-md-7">
+                <div class="card">
+                    <div class="card-header" style="text-align:center">
+                        <h4 class="card-title text-center">Coin : {{coin}}</h4>
+                        <input type="button" class="btn btn-primary" value="Add 10 coin" id="add10"
+                            style="margin-top:4px;" (click)="addCoin(10)" [disabled]="lockAdmin">
+                        <input type="button" class="btn btn-primary" value="Add 100 coin" id="add100"
+                            style="margin-top:4px;" (click)="addCoin(100)" [disabled]="lockAdmin">
+                    </div>
+                    <div class="card-body">
+                        <div id="slots_container">
+                            <div class="container_min">
+                                <div class="slots" id="slots_a">
+                                    <div class="wrapper" #slotA></div>
+                                </div>
+                                <div class="slots" id="slots_b">
+                                    <div class="wrapper" #slotB></div>
+                                </div>
+                                <div class="slots" id="slots_c">
+                                    <div class="wrapper" #slotC></div>
+                                </div>
+                                <div style="text-align:center">
+                                    <input type="button" class="btn btn-info" value="SPIN" id="spin"
+                                        style="margin-top:4px;" (click)="spin()"
+                                        [disabled]="buttonDisable || lockAdmin ">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xs-12 col-md-5">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title text-center">Table Win</h4>
-                </div>
-                <div class="card-body">
-                    <table class="table ">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Slot
-                                </th>
-                                <th>
-                                    Coin
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let item of opts_img, let i = index ">
-                                <td span="10">
-                                    <div>
-                                        <div class="table_slot_container" *ngFor="let itemNum of _createRange(3)">
-                                            <img class="table_slot" src={{item}}>
+            <div class="col-xs-12 col-md-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title text-center">Table Win</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Slot
+                                    </th>
+                                    <th>
+                                        Coin
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of opts_img, let i = index ">
+                                    <td span="10">
+                                        <div>
+                                            <div class="table_slot_container" *ngFor="let itemNum of _createRange(3)">
+                                                <img class="table_slot" src={{item}}>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td span="2">
-                                    <span class="table_money"> {{money[i] * 3}}</span>
-                                </td>
-                            </tr>
-                            <tr *ngFor="let item of opts_img.slice(0, 3), let i = index ">
-                                <td span="10">
-                                    <div>
-                                        <div class="table_slot_container" *ngFor="let itemNum of _createRange(2)">
-                                            <img class="table_slot" src={{item}}>
+                                    </td>
+                                    <td span="2">
+                                        <span class="table_money"> {{money[i] * 3}}</span>
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let item of opts_img.slice(0, 3), let i = index ">
+                                    <td span="10">
+                                        <div>
+                                            <div class="table_slot_container" *ngFor="let itemNum of _createRange(2)">
+                                                <img class="table_slot" src={{item}}>
+                                            </div>
+                                            <div class="table_slot_container">
+                                                <span class="table_slot"></span>
+                                            </div>
                                         </div>
-                                        <div class="table_slot_container">
-                                            <span class="table_slot"></span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td span="2">
-                                    <span class="table_money"> {{money[i] * 2}}</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                    <td span="2">
+                                        <span class="table_money"> {{money[i] * 2}}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
