@@ -7,16 +7,7 @@
 
 <div class="main-content">
   <div class="row">
-    <div class="col-9 col-camera" >
-      <div class="card">
-        <div class="card-header">
-          <h4 class="card-title text-center">Input/Output</h4>
-        </div>
-        <div class="card-body centerVideo">
-          <app-camera (metadataFace)=metadataFace [width]=550 [height]=550 [subscribeCamera]=false></app-camera>
-        </div>
-      </div>
-    </div>
+
     <div class="col-12">
       <div class="card">
         <div class="card-header">
@@ -35,20 +26,40 @@
                   <th rowspan="2">
                     Age
                   </th>
-                  <th rowspan="2">
-                    Expressions
-                  </th>
-                  <th colspan="3" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125)">
+                  <th colspan="4" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125)">
                     Play
+                  </th>
+                  <th colspan="2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125)">
+                    Ludopatico
+                  </th>
+                  <th rowspan="2">
+                    Click al secondo
+                  </th>
+                  <th rowspan="2">
+                    Denaro al minuto medio speso
                   </th>
                 </tr>
                 <tr>
                   <th>Last Play Start</th>
+                  <th>Total Day</th>
                   <th>Minutes</th>
                   <th>Money</th>
+                  <th>Ludopatico</th>
+                  <th>Tasso Ludopatia</th>
+                </tr>
+                <tr >
+                  <td colspan="11">Per calcolare se un utente  e ludopatico ho bisogno di:</td>
+                </tr>
+                <tr>
+                  <td colspan="1">(20%) Tempo trascorso:</td>
+                  <td colspan="1">(40%) Denaro Introdotto:</td>
+                  <td colspan="1">(20%) Espressione dominante:</td>
+                  <td colspan="1">(20%) Assuefazione click</td>
+                  <td colspan="7">Formula : (((MinutiTotali/GiorniTotali) *20) /100) + (((denaroTotale/GiorniTotali) * 40) /100) + ((espressioneDominante*20) /100) + ((clickSecondo *20) / 10) </td>
                 </tr>
               </thead>
               <tbody>
+               
                 <tr *ngFor="let face of faces">
                   <td>
                     {{ face.id }}
@@ -60,24 +71,40 @@
                     {{face.age | number: '1.0-0'}}
                   </td>
                   <td>
-                    <p *ngFor="let expression of face.expressions | keyvalue">
-                      <span class="{{expression.key}} dispTable">{{expression.key}} :
-                        {{expression.value * 100 | number:'1.1-2'}} </span>
-                    </p>
-                  </td>
-                  <td>
                     {{face.lastDetect | date:'medium' }}
                   </td>
                   <td>
-                    {{convertMiliseconds(face.totalMinutes, "m")}}
+                    {{face.totDayPlaying}}
+                  </td>
+                  <td>
+                    {{convertMiliseconds(face.totalMillisPlay, "m")}}
                   </td>
                   <td>
                     {{face.totalMoney}}
                   </td>
+                  <td>
+                    {{ face.ludopatico ? "A Rischio" : "Nessun Pericolo"}}
+                  </td>
+                  <td>
+                    {{ this.calcolaLudopatia(face) | number: '1.1-2'}}
+                  </td>
+                  <td>
+                    {{ this.convertMiliseconds(face.totalMillisPlay , "s") / face.totalClick | number: '1.1-2'}}
+                  </td>
+                  <td>
+                    {{face.totalMoney / this.convertMiliseconds(face.totalMillisPlay , "m") }}
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
 
               </tbody>
             </table>
+
         </div>
       </div>
     </div>

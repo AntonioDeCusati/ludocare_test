@@ -8,6 +8,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { Template } from '@angular/compiler/src/render3/r3_ast';
 
 
+Window['clickInSession'] = 0; // utilizzate per calcolare il rate del click
 Window['spinAvaiable'] = true; // utilizzate per calcolare il rate del click
 @Component({
   selector: "slot-machine",
@@ -31,8 +32,8 @@ export class SlotMachineComponent implements AfterViewInit {
   lockAdmin = false;
   firstPlay = true;
   template = '<img class="custom-spinner-template" src="./assets/img/loading2.gif">';
-  clickSessione = 0;
   timerAvviato = false;
+  idCurrentFace;
 
 
 
@@ -64,12 +65,12 @@ export class SlotMachineComponent implements AfterViewInit {
     this.coin += coin;
     this.buttonDisable = false;
 
-    let idCurrentFace = this.cameraComponent.detectionsFace.nativeElement.dataset['value']
-    if (idCurrentFace) {
-      this.generalService.addMoney(idCurrentFace, coin)
+    this.idCurrentFace = this.cameraComponent.detectionsFace.nativeElement.dataset['value']
+    if (this.idCurrentFace) {
+      this.generalService.addMoney(this.idCurrentFace, coin)
 
       //apro sessione
-      let sessionActive = this.generalService.openSession(idCurrentFace)
+      let sessionActive = this.generalService.openSession(this.idCurrentFace)
     }
 
     this._startSession(this.durationSessionConfig)
@@ -82,40 +83,63 @@ export class SlotMachineComponent implements AfterViewInit {
     this.lockAdmin = false;
     this.firstPlay = true;
     this.config = { leftTime: 0 }
-    console.log("Non salvo il tempo trascorso per questa sessione")
+    console.log("Non salvo il tempo trascorso per questa sessione perchè lo salvo nel timeout") //TODO
   }
 
 
   spin() {
-    this.clickSessione += 1;
-    console.log(Window['spinAvaiable'])
-    if (Window['spinAvaiable']) {
-      this.spinFunc()
-    }
+    //controllo se la persona è ludopatica
+    this.generalService.simpleUpdate(this.idCurrentFace).then(doc => {
+      if (!doc.exists) {
+        console.log('No such document!');
+      } else {
+        if (doc.data().ludopatico) {
+          Window['isLudopatico'] = true;
+          this.lockAdmin = true;
+          this.toastr.warning('Chiusura obbligatoria della sessione', 'L\'Utente corrende risulta Ludopatico', {
+            timeOut: 5000,
+            enableHtml: true,
+            closeButton: true,
+            toastClass: "alert alert-warning toast-x-large",
+            positionClass: 'toast-top-center'
+          });
+        } else {
+          Window['isLudopatico'] = false;
+          Window['clickInSession'] += 1;
+          this.spinFunc()
+        }
+      }
+    })
+      .catch(err => {
+        return false
+      });
+
   }
 
   spinFunc() {
-    if (this.coin >= 1) {
-      this.coin -= 1;
-      this.checkWin(this.slotA, this.slotB, this.slotC)
-    } else {
-      this.toastr.error('Per poter continuare è necessario inserire una moneta', 'Denaro Insufficiente', {
-        timeOut: 3000,
-        enableHtml: true,
-        closeButton: true,
-        toastClass: "alert alert-danger alert-with-icon",
-        positionClass: 'toast-top-right'
-      });
-      //console.log(clickSessione)
-      //this.generalService.closeSession(clickSessione)
-    }
-    if (this.coin === 0) {
-      this.buttonDisable = true;
-    }
+    setTimeout(() => {
+      if (this.coin >= 1) {
+        this.coin -= 1;
+        this.checkWin(this.slotA, this.slotB, this.slotC)
+      } else {
+        this.toastr.error('Per poter continuare è necessario inserire una moneta', 'Denaro Insufficiente', {
+          timeOut: 3000,
+          enableHtml: true,
+          closeButton: true,
+          toastClass: "alert alert-danger alert-with-icon",
+          positionClass: 'toast-top-right'
+        });
+        this.generalService.closeSession(this.idCurrentFace)
+      }
+      if (this.coin === 0) {
+        this.buttonDisable = true;
+      }
+    }, 1200);
   }
 
 
   checkWin(A: ElementRef, B: ElementRef, C: ElementRef) {
+
     let number = 0,
       elemA = A.nativeElement.getAttribute('data-result'),
       elemB = B.nativeElement.getAttribute('data-result'),
@@ -137,7 +161,6 @@ export class SlotMachineComponent implements AfterViewInit {
   }
 
   addWinCoin(elem, number) {
-    console.log("Elem: ", elem);
     let moneteVinte = 0;
     const winToast = (moneteVinteToas) => {
       this.toastr.success('Hai vinto : ' + moneteVinteToas + ' monete', 'Complimenti', {
@@ -191,6 +214,7 @@ export class SlotMachineComponent implements AfterViewInit {
         }
         break;
       }
+
     }
 
     if (moneteVinte > 0) {
@@ -220,9 +244,8 @@ export class SlotMachineComponent implements AfterViewInit {
     if (!this.timerAvviato) {
       this.timerAvviato = true;
       setTimeout(() => {
-        console.log("Chiusura obbligatoria sessione")
         this.lockAdmin = true;
-        this.toastr.warning('Chiusura obbligatoria della sessione', 'Contatta l\'admin di sistema per sbloccare la slot', {
+        this.toastr.warning('Tempo Scaduto! Chiusura obbligatoria della sessione', 'Contatta l\'admin di sistema per sbloccare la slot', {
           timeOut: 5000,
           enableHtml: true,
           closeButton: true,
@@ -230,9 +253,11 @@ export class SlotMachineComponent implements AfterViewInit {
           positionClass: 'toast-top-center'
         });
 
-        console.log(this.clickSessione)
         this.timerAvviato = false;
         //salvo tempo davanti maccchina sul db
+        this.generalService.closeSession(this.idCurrentFace)
+
+
       }, durationSession * 1000)
     }
   }
