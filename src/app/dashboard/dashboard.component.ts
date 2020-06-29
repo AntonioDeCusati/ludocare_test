@@ -42,46 +42,6 @@ export class DashboardComponent implements OnInit {
 
   }
 
-  calcolaLudopatia(face) {
-    //((MinutiTotali/GiorniTotali *20 /100) + ((denaroTotale * 40) /100) + ((espressioneDominante*20) /100) + ((clickSecondo *20) / 10)
-    let getValueEmotion = (dominantExpr) => {
-      if (dominantExpr) {
-        switch (dominantExpr) {
-          case 'neutral':
-            return 10;
-          case 'happy':
-            return 20;
-          case 'surprise':
-            return 20;
-          case 'fearful':
-            return 40;
-          case 'disgusted':
-            return 40;
-          case 'sad':
-            return 100;
-          case 'angry':
-            return 100;
-
-        }
-      }else {
-        return 0
-      }
-
-    }
-
-    let par1 = this.convertMiliseconds(face.totalMillisPlay, "m") / face.totDayPlaying;
-    let par2 = face.totalMoney/ face.totDayPlaying ;
-    let par3 = face.dominantExpr ? getValueEmotion(face.dominantExpr) : 10;
-    let par4 = this.convertMiliseconds(face.totalMillisPlay , "s") / face.totalClick;
-
-    let risPerc = (val, perc) => {
-      return (val * perc) / 100
-    }
-
-    let tot = risPerc(par1, 20) + risPerc(par2, 40) + risPerc(par3, 20) + risPerc(par4, 20);
-
-    return tot;
-  }
 
 
 

@@ -34,6 +34,8 @@ export class SlotMachineComponent implements AfterViewInit {
   template = '<img class="custom-spinner-template" src="./assets/img/loading2.gif">';
   timerAvviato = false;
   idCurrentFace;
+  intervalGo = false;
+  intervalId;
 
 
 
@@ -58,10 +60,53 @@ export class SlotMachineComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-
+    this.checkLudopatic();
   }
 
+
+  checkLudopatic(){
+    if(!this.intervalGo){
+      this.intervalId = window.setInterval(()=> {
+        this.idCurrentFace = this.cameraComponent.detectionsFace.nativeElement.dataset['value'];
+        this.intervalGo = true;
+        if(this.idCurrentFace && !this.lockAdmin){
+           this.generalService.simpleGet(this.idCurrentFace).then(doc => {
+            if (!doc.exists) {
+              console.log('No such document!');
+            } else {
+              let tot = this.generalService.calcolaLudo(doc.data());
+              console.log("TOT: ",tot);
+              if(tot > 70){
+                this.generalService.simpleUpdate(this.idCurrentFace,{ ludopatico : true, tassoLudo : tot})
+                Window['isLudopatico'] = true;
+                this.lockAdmin = true;
+                this.toastr.warning('Chiusura obbligatoria della sessione', 'L\'Utente corrende risulta Ludopatico', {
+                  timeOut: 5000,
+                  enableHtml: true,
+                  closeButton: true,
+                  toastClass: "alert alert-warning toast-x-large",
+                  positionClass: 'toast-top-center'
+                });
+                window.clearInterval(this.intervalId);
+                this.intervalGo = false;
+              }else{
+                this.generalService.simpleUpdate(this.idCurrentFace, {tassoLudo : tot});
+              }
+            }
+          })
+         
+        }
+      }, 2000)
+    }
+  }
+
+  ngOnDestroy(): void {
+    window.clearInterval(this.intervalId);
+  }
+
+
   addCoin(coin) {
+    this.checkLudopatic();
     this.coin += coin;
     this.buttonDisable = false;
 
@@ -89,31 +134,9 @@ export class SlotMachineComponent implements AfterViewInit {
 
   spin() {
     //controllo se la persona è ludopatica
-    this.generalService.simpleUpdate(this.idCurrentFace).then(doc => {
-      if (!doc.exists) {
-        console.log('No such document!');
-      } else {
-        if (doc.data().ludopatico) {
-          Window['isLudopatico'] = true;
-          this.lockAdmin = true;
-          this.toastr.warning('Chiusura obbligatoria della sessione', 'L\'Utente corrende risulta Ludopatico', {
-            timeOut: 5000,
-            enableHtml: true,
-            closeButton: true,
-            toastClass: "alert alert-warning toast-x-large",
-            positionClass: 'toast-top-center'
-          });
-        } else {
-          Window['isLudopatico'] = false;
-          Window['clickInSession'] += 1;
-          this.spinFunc()
-        }
-      }
-    })
-      .catch(err => {
-        return false
-      });
-
+    Window['clickInSession'] += 1;
+    this.spinFunc()
+        
   }
 
   spinFunc() {

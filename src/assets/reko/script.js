@@ -170,7 +170,8 @@ if (video) {
 									descriptor: Array.from(tempFace.descriptor),
 									expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
 									ludopatico: false,
-									totalClick: 0
+									totalClick: 0,
+									primaryEmotion : ""
 								}
 							).then(ref => {
 								//detectionsFace 
@@ -217,7 +218,6 @@ if (video) {
 										lastPrimaryEmotion === currentPrimaryEmotion
 									}
 								}
-								//console.log(currentPrimaryEmotion)
 							})
 							lastPerson = bestMatch.label;
 
@@ -228,8 +228,6 @@ if (video) {
 							//apro Sessione
 							sessionOpened = true;
 
-
-
 							faceRefLast.get()
 								.then(doc => {
 									if (!doc.exists) {
@@ -238,11 +236,8 @@ if (video) {
 										let faceRefNew = db.collection(dbUsed).doc(lastPerson);
 										let lastExpressions = JSON.parse(JSON.stringify(resizedDetections[0].expressions));
 										if (lastPrimaryEmotion === currentPrimaryEmotion) {
-											console.log("Aggiornate emozioni sul DB");
-											faceRefNew.update({ expressions: lastExpressions });
+											faceRefNew.update({ expressions: lastExpressions, primaryEmotion:  currentPrimaryEmotion});
 										}
-
-
 									}
 								})
 								.catch(err => {
@@ -288,6 +283,7 @@ if (video) {
 				let currentMill = new Date().getTime();
 				if (tempFace.detection.score > 0.95 && voltoSalvato) {
 					voltoSalvato = false;
+					let currentDate = new Date();
 					db.collection(dbUsed).add(
 						{
 							id: "primo_viso",
@@ -304,7 +300,8 @@ if (video) {
 							firstDayPlaying: currentDate,
 							totDayPlaying: 1,
 							ludopatico: false,
-							totalClick: 0
+							totalClick: 0,
+							primaryEmotion : ""
 						}
 					).then(ref => {
 						let faceRef = db.collection(dbUsed).doc(ref.id);

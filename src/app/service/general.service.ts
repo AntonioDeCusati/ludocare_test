@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentSnapshot, DocumentReference } from '@angular/fire/firestore';
 import { rejects } from 'assert';
 import { iif } from 'rxjs';
+import { totalmem } from 'os';
 
 
 
@@ -100,8 +101,6 @@ totalClick: 0
   }
 
   closeSession(idFace: string) {
-
-
     let currentMillis = new Date().getTime();
 
     let faceRefLast = this.usersRef.doc(idFace);
@@ -111,7 +110,8 @@ totalClick: 0
           console.log('No such document!');
         } else {
           let totalMillisPlay = (currentMillis - doc.data().lastDetect) + doc.data().totalMillisPlay;
-          faceRefLast.update({ totalMillisPlay: totalMillisPlay });
+          faceRefLast.update({ totalMillisPlay: totalMillisPlay, lastDetect: currentMillis }); //aggiunto lastDetect per sistemare il bug della sessione 
+          //nello specifico il lasso di tempo della giocata veniva calcolato due volte qualora la sessione di gioco fosse finita
           let totMinCovert = this.convertMiliseconds(totalMillisPlay, "m")
           console.log("L' utente : " + doc.data().id + " ha giocato per un totale di " + totMinCovert + " minuti")
 
@@ -125,16 +125,61 @@ totalClick: 0
   }
 
 
-  checkGiorniGiocati() {
+  
 
+  calcolaLudo(obj){
+     //((MinutiTotali/GiorniTotali *20 /100) + ((denaroTotale * 40) /100) + 
+     //((espressioneDominante*20) /100) + ((clickSecondo *20) / 10)
+   
+    let tot;
+    let getValueEmotion = (dominantExpr) => {
+      if (dominantExpr) {
+        switch (dominantExpr) {
+          case 'neutral':
+            return 10;
+          case 'happy':
+            return 20;
+          case 'surprise':
+            return 20;
+          case 'fearful':
+            return 40;
+          case 'disgusted':
+            return 40;
+          case 'sad':
+            return 100;
+          case 'angry':
+            return 100;
+
+        }
+      }else {
+        return 0
+      }
+
+    }
+
+    let risPerc = (val, perc) => {
+      return (val * perc) / 100
+    }
+
+    let par1 = this.convertMiliseconds(obj.totalMillisPlay, "m") / obj.totDayPlaying;
+    let par2 = obj.totalMoney/ obj.totDayPlaying ;
+    let par3 = obj.primaryEmotion ? getValueEmotion(obj.primaryEmotion) : 10;
+    let par4 = this.convertMiliseconds(obj.totalMillisPlay , "s") / obj.totalClick;
+
+    tot = risPerc(par1, 20) + risPerc(par2, 40) + risPerc(par3, 20) + risPerc(par4, 20);
+
+    return tot;
   }
 
-  simpleUpdate(idFace: string) {
+  simpleGet(idFace: string) {
     let faceRefLast = this.usersRef.doc(idFace);
     return faceRefLast.get().toPromise()
-
   }
 
+  simpleUpdate(idFace:string,obj: Object) {
+    let faceRefLast = this.usersRef.doc(idFace);
+    return faceRefLast.update(obj)
+  }
 
 
   convertMiliseconds(miliseconds: number, format: string): number {

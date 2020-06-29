@@ -16,6 +16,17 @@
         <div class="card-body table-wrapper-scroll-y my-custom-scrollbar">
             <table class="table table-bordered table-striped mb-0">
               <thead class=" text-primary">
+                
+                <tr >
+                  <td colspan="11">Per calcolare se un utente è ludopatico ho bisogno di:</td>
+                </tr>
+                <tr>
+                  <td colspan="1">(20%) Tempo trascorso:</td>
+                  <td colspan="1">(40%) Denaro Introdotto:</td>
+                  <td colspan="1">(20%) Espressione dominante:</td>
+                  <td colspan="1">(20%) Assuefazione click</td>
+                  <td colspan="7">Formula : (((MinutiTotali/GiorniTotali) *20) /100) + (((denaroTotale/GiorniTotali) * 40) /100) + ((espressioneDominante*20) /100) + ((clickSecondo *20) / 10) </td>
+                </tr>
                 <tr>
                   <th rowspan="2">
                     Id
@@ -47,16 +58,6 @@
                   <th>Ludopatico</th>
                   <th>Tasso Ludopatia</th>
                 </tr>
-                <tr >
-                  <td colspan="11">Per calcolare se un utente  e ludopatico ho bisogno di:</td>
-                </tr>
-                <tr>
-                  <td colspan="1">(20%) Tempo trascorso:</td>
-                  <td colspan="1">(40%) Denaro Introdotto:</td>
-                  <td colspan="1">(20%) Espressione dominante:</td>
-                  <td colspan="1">(20%) Assuefazione click</td>
-                  <td colspan="7">Formula : (((MinutiTotali/GiorniTotali) *20) /100) + (((denaroTotale/GiorniTotali) * 40) /100) + ((espressioneDominante*20) /100) + ((clickSecondo *20) / 10) </td>
-                </tr>
               </thead>
               <tbody>
                
@@ -86,7 +87,7 @@
                     {{ face.ludopatico ? "A Rischio" : "Nessun Pericolo"}}
                   </td>
                   <td>
-                    {{ this.calcolaLudopatia(face) | number: '1.1-2'}}
+                    {{ face.tassoLudo }}
                   </td>
                   <td>
                     {{ this.convertMiliseconds(face.totalMillisPlay , "s") / face.totalClick | number: '1.1-2'}}
