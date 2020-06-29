@@ -11,7 +11,6 @@ Promise.all([
   //console.log("Db used for getting data:", dbUsed);
   refreshData();
   startVideo();
-  console.log(document.getElementById("spinner"))
 })
 
 var detenctionModel = {
@@ -29,13 +28,15 @@ var detenctionModel = {
 
 
 var option = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.8, maxResults: 1 })
-var currentPerson, lastPerson, lastFaceDescriptor, currentFaceDescriptor;
-var faceMatcher;
-var labeledDescriptors = []
-var inserted = false;
-var volte = 0;
-var volteVisoNonTrovato = 0;
-var sessionOpened = false;
+var currentPerson, lastPerson, lastFaceDescriptor, currentFaceDescriptor,
+  faceMatcher,
+  labeledDescriptors = [],
+  inserted = false,
+  volte = 0,
+  volteVisoNonTrovato = 0,
+  sessionOpened = false,
+  xA, xB, xC;
+Window['spinAvaiable'] = true; // utilizzate per calcolare il rate del click
 
 function startVideo() {
   navigator.mediaDevices.getUserMedia({ video: true })
@@ -66,7 +67,7 @@ function refreshData() {
 }
 
 video.addEventListener('play', () => {
-  var creatoDeku = false;
+
   if (document.getElementById("canvasClr") != undefined) {
     delete document.getElementById("canvasClr");
   }
@@ -84,43 +85,32 @@ video.addEventListener('play', () => {
     var detections = await faceapi.detectAllFaces(video, option).withFaceLandmarks().withFaceExpressions().withAgeAndGender().withFaceDescriptors()
     //console.log(detections.length);
     if (detections.length === 0) {
-      //console.log("Volte volto non trovato: ", volteVisoNonTrovato)
-      //console.log("L'ultimo utente è stato: ", lastPerson);
-      if (volteVisoNonTrovato > 3 && lastPerson) {
+      if (volteVisoNonTrovato > 6 && lastPerson) {
         // devo terminare la sessione dell'utente corrente
         let currentMill = new Date().getTime();
         let faceRefLast = db.collection(dbUsed).doc(lastPerson);
         faceRefLast.get()
           .then(doc => {
             if (!doc.exists) {
-              //console.log('No such document!');
+              console.log('No such document!');
             } else {
               let totalMinutes = (currentMill - doc.data().lastDetect) + doc.data().totalMinutes;
               faceRefLast.update({ totalMinutes: totalMinutes });
               let totMinCovert = convertMiliseconds(totalMinutes, "m")
-              //console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
-
-              sessionOpened = false;
-              lastPerson = undefined;
+              console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
             }
+            sessionOpened = false;
+            lastPerson = undefined;
           })
           .catch(err => {
-            //console.log('Error getting document', err);
+            console.log('Error getting document', err);
           });
-          lastPerson = undefined;
       } else {
         volteVisoNonTrovato += 1;
       }
       return
     } else {
       volteVisoNonTrovato = 0;
-      detectionsFace.innerHTML = lastPerson ? lastPerson : "";
-      detectionsFace.dataset['value'] = lastPerson ? lastPerson : "";
-      //elimino lo spinner
-      if( document.getElementById("spinner").hidden === false){
-        document.getElementById("spinner").hidden = true;
-      }
-      
     }
 
     let faces = detections;
@@ -134,18 +124,18 @@ video.addEventListener('play', () => {
 
       if (bestMatch.label === "unknown") {
         //Faccio saltare la prima volta per non creare troppi volti qualora esistesse gia
-        if (volte < 3) { //futuro 8
-          //console.info("Volto non riconosciuto ma non salvato, al prossimo giro lo salvo");
+        if (volte < 10) { 
+          console.info("Volto non riconosciuto ma non salvato, al prossimo giro lo salvo");
           volte += 1;
         } else {
           volte = 0;
-          //console.info("Persona sconosciuta, sto salvando tutta la faccia: ", faces[0])
+          console.info("Persona sconosciuta, sto salvando tutta la faccia: ", faces[0])
           //console.log("Score: ", resizedDetections[0].detection.score)
 
           let tempFace = resizedDetections[0];
           if (resizedDetections[0].detection.score > 0.96) {
             let currentMill = new Date().getTime();
-            /* db.collection(dbUsed).add(
+             db.collection(dbUsed).add(
                {
                  id: "temp",
                  age: tempFace.age,
@@ -162,20 +152,24 @@ video.addEventListener('play', () => {
                //console.log('Added document with ID: ', ref.id);
                let faceRef = db.collection(dbUsed).doc(ref.id);
                faceRef.update({ id: ref.id, label: ref.id });
-             });*/
+             });
           }
         }
       } else {
         // il viso è stato riconosciuto
-
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
         drawBox.draw(canvas)
         faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
         //console.log(lastPerson);
 
         if (!lastPerson) {
-          lastPerson = bestMatch.label;
-
+        lastPerson = bestMatch.label;
+        detectionsFace.innerHTML = lastPerson ? lastPerson : "unknown";
+        detectionsFace.dataset['value'] = lastPerson ? lastPerson : "unknown";
+        //elimino lo spinner
+        if (document.getElementById("spinner").hidden === false) {
+          document.getElementById("spinner").hidden = true;
+        }
         } else {
 
           if (lastPerson === bestMatch.label) {
@@ -241,9 +235,9 @@ video.addEventListener('play', () => {
       let tempFace = resizedDetections[0];
       let currentMill = new Date().getTime();
       if (tempFace.detection.score > 0.90) {
-        /* db.collection(dbUsed).add(*
+         db.collection(dbUsed).add(
            {
-             id: "temp",
+             id: "primo_viso",
              age: tempFace.age,
              descriptor: Array.from(tempFace.descriptor),
              score: tempFace.detection.score,
@@ -258,12 +252,12 @@ video.addEventListener('play', () => {
            //console.log('Added document with ID: ', ref.id);
            let faceRef = db.collection(dbUsed).doc(ref.id);
            faceRef.update({ id: ref.id, label: ref.id });
-         });*/
+         });
       }
     }
 
 
-  }, 1500) //metterò 250 forse
+  }, 333) //metterò 250 forse
 })
 
 
@@ -292,3 +286,43 @@ function convertMiliseconds(miliseconds, format) {
       return { d: days, h: hours, m: minutes, s: seconds };
   }
 };
+
+
+
+let count = 0;
+const btnShuffle = document.querySelector('#spin');
+const casino1 = document.querySelector('#slots_a_wrapper');
+const casino2 = document.querySelector('#slots_b_wrapper');
+const casino3 = document.querySelector('#slots_c_wrapper');
+const mCasino1 = new SlotMachine(casino1, {
+  active: 0,
+  delay: 500
+});
+const mCasino2 = new SlotMachine(casino2, {
+  active: 1,
+  delay: 500
+});
+const mCasino3 = new SlotMachine(casino3, {
+  active: 2,
+  delay: 500
+});
+btnShuffle.addEventListener('click', () => {
+  if (Window['spinAvaiable'] === true) {
+    Window['spinAvaiable'] = false;
+    mCasino1.shuffle();
+    mCasino2.shuffle();
+    mCasino3.shuffle();
+    xA = mCasino1.stop();
+    mCasino1.element.setAttribute("data-result", xA + 1)
+    xB = mCasino2.stop();
+    mCasino2.element.setAttribute("data-result", xB + 1)
+    xC = mCasino3.stop();
+    mCasino3.element.setAttribute("data-result", xC + 1)
+  }
+  setTimeout(() => {
+    Window['spinAvaiable'] = true;
+  }, 1200)
+
+
+});
+

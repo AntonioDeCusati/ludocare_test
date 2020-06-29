@@ -72,7 +72,9 @@ export class GeneralService {
     return this.sessionActive;
   }
 
-  closeSession(idFace: string) {
+  closeSession(idFace: string,clickSession : number) {
+
+
     let currentMillis = new Date().getTime();
 
     let faceRefLast = this.usersRef.doc(idFace);
@@ -94,6 +96,17 @@ export class GeneralService {
       });
 
   }
+
+
+  assuefazioneClick(){
+
+  }
+
+  assuefazioneDenaro(){
+    
+  }
+
+
 
 
   convertMiliseconds(miliseconds : number, format : string) : number | Object{

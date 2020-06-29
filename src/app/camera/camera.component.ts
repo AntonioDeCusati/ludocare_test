@@ -30,28 +30,19 @@ export class CameraComponent implements OnInit {
 
   constructor(private renderer: Renderer2, private generalService : GeneralService) { }
 
-
   public ngOnInit(): void {
-
-
   }
 
   ngAfterViewInit(): void {
     of(this.loadJScript()).toPromise().then( ()=>{
       this.source.subscribe(val => { 
-       // console.log(window['lastPerson'])
-       // console.log(window['faceFromDB'])
-
-
 
        //Gestione sessione
        if(this.detectionsFace.nativeElement.dataset['value']){
-        let dataValue = this.detectionsFace.nativeElement.dataset['value'];
-        console.log("Last: " + this.lastFaceDescriptor + " - Current: " + dataValue)
-
+        let dataValue = this.detectionsFace.nativeElement.dataset['value']
         if(this.lastFaceDescriptor && this.lastFaceDescriptor != dataValue){
 
-          this.generalService.closeSession(dataValue);
+          //this.generalService.closeSession(dataValue);
           console.log("Chiudo sessione");
 
         } 
@@ -80,10 +71,10 @@ export class CameraComponent implements OnInit {
 
   public loadJScript() {
     const scriptsArray = [
+      './assets/reko/jquery.js',
+      './assets/reko/jquery-ui.js',
       './assets/reko/face-api.min.js',
       './assets/reko/script.js',
-
-
     ]
     for (let i = 0; i < scriptsArray.length; i++) {
       const body = <HTMLDivElement>document.body;

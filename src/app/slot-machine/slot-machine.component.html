@@ -1,6 +1,5 @@
 <div>
-    <ng4-loading-spinner id="spinner" [timeout]="10000000"
-     [zIndex]="999"> </ng4-loading-spinner>
+    <ng4-loading-spinner id="spinner" [timeout]="10000000" [zIndex]="999"> </ng4-loading-spinner>
     <div class="panel-header">
         <div class="header text-center row">
             <div class="col-sm-12 col-md-6">
@@ -30,24 +29,48 @@
                             style="margin-top:4px;" (click)="addCoin(100)" [disabled]="lockAdmin">
                     </div>
                     <div class="card-body">
-                        <div id="slots_container">
-                            <div class="container_min">
-                                <div class="slots" id="slots_a">
-                                    <div class="wrapper" #slotA></div>
-                                </div>
-                                <div class="slots" id="slots_b">
-                                    <div class="wrapper" #slotB></div>
-                                </div>
-                                <div class="slots" id="slots_c">
-                                    <div class="wrapper" #slotC></div>
-                                </div>
-                                <div style="text-align:center">
-                                    <input type="button" class="btn btn-info" value="SPIN" id="spin"
-                                        style="margin-top:4px;" (click)="spin()"
-                                        [disabled]="buttonDisable || lockAdmin ">
+                        <div id="casino">
+                            <div class="content">
+                                <div>
+                                    <div class="container_min">
+                                        <div class="slotMachine" style="margin-left: -65px;" id="slots_a_wrapper"
+                                            #slotA>
+                                            <!--div class="wrapper" #slotA id="slots_a_wrapper"></div>-->
+                                            <div class="slot slot1"></div>
+                                            <div class="slot slot2"></div>
+                                            <div class="slot slot3"></div>
+                                            <div class="slot slot4"></div>
+                                            <div class="slot slot5"></div>
+                                            <div class="slot slot6"></div>
+                                        </div>
+                                        <div class="slotMachine" id="slots_b_wrapper" #slotB>
+                                            <!--<div class="wrapper" #slotB id="slots_b_wrapper"></div>-->
+                                            <div class="slot slot1"></div>
+                                            <div class="slot slot2"></div>
+                                            <div class="slot slot3"></div>
+                                            <div class="slot slot4"></div>
+                                            <div class="slot slot5"></div>
+                                            <div class="slot slot6"></div>
+                                        </div>
+                                        <div class="slotMachine" id="slots_c_wrapper" #slotC>
+                                            <!--<div class="wrapper" #slotC id="slots_c_wrapper"></div>-->
+                                            <div class="slot slot1"></div>
+                                            <div class="slot slot2"></div>
+                                            <div class="slot slot3"></div>
+                                            <div class="slot slot4"></div>
+                                            <div class="slot slot5"></div>
+                                            <div class="slot slot6"></div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align:center; margin-left: -60px;">
+                                        <input type="button" class="btn btn-info" value="SPIN" id="spin"
+                                            style="margin-top:4px;" (click)="spin()"
+                                            [disabled]="buttonDisable || lockAdmin ">
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -101,6 +124,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

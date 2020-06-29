@@ -8,6 +8,7 @@ import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { Template } from '@angular/compiler/src/render3/r3_ast';
 
 
+Window['spinAvaiable'] = true; // utilizzate per calcolare il rate del click
 @Component({
   selector: "slot-machine",
   templateUrl: `./slot-machine.component.html`,
@@ -22,7 +23,7 @@ export class SlotMachineComponent implements AfterViewInit {
 
   config;
   coin: number = 0;
-  durationSessionConfig : number = 600;
+  durationSessionConfig: number = 60; //600 = 10 min
   buttonDisable = true;
   sessionActive = false;
   counterMin = 0;
@@ -30,32 +31,33 @@ export class SlotMachineComponent implements AfterViewInit {
   lockAdmin = false;
   firstPlay = true;
   template = '<img class="custom-spinner-template" src="./assets/img/loading2.gif">';
-  
+  clickSessione = 0;
+  timerAvviato = false;
+
+
 
 
   // options for slots
   opts = ["A", "B", "C", "D", "F", "G"];
   opts_img = [
-    "./assets/img/bar.png",
-    "./assets/img/limone.png",
-    "./assets/img/melone.png",
-    "./assets/img/amarene.png",
-    "./assets/img/arancia.png",
-    "./assets/img/banana.png",
+    "./assets/libs/img/slot6.png",
+    "./assets/libs/img/slot5.png",
+    "./assets/libs/img/slot4.png",
+    "./assets/libs/img/slot3.png",
+    "./assets/libs/img/slot2.png",
+    "./assets/libs/img/slot1.png",
   ];
   money = [
-    6, 4, 2, 1, 1, 1
+    4, 3, 2, 1, 1, 1
   ];
 
   constructor(private toastr: ToastrService, private generalService: GeneralService,
-    private renderer: Renderer2,private spinnerService: Ng4LoadingSpinnerService) {
-      this.spinnerService.show();
-     }
+    private renderer: Renderer2, private spinnerService: Ng4LoadingSpinnerService) {
+    this.spinnerService.show();
+  }
 
   ngAfterViewInit() {
-    this.addSlots(this.slotA);
-    this.addSlots(this.slotB);
-    this.addSlots(this.slotC);
+
   }
 
   addCoin(coin) {
@@ -71,7 +73,7 @@ export class SlotMachineComponent implements AfterViewInit {
     }
 
     this._startSession(this.durationSessionConfig)
-    
+
 
   }
   reset() {
@@ -83,13 +85,18 @@ export class SlotMachineComponent implements AfterViewInit {
     console.log("Non salvo il tempo trascorso per questa sessione")
   }
 
+
   spin() {
-    this.buttonDisable = true;
+    this.clickSessione += 1;
+    console.log(Window['spinAvaiable'])
+    if (Window['spinAvaiable']) {
+      this.spinFunc()
+    }
+  }
+
+  spinFunc() {
     if (this.coin >= 1) {
       this.coin -= 1;
-      this.addSlots(this.slotA);
-      this.addSlots(this.slotB);
-      this.addSlots(this.slotC);
       this.checkWin(this.slotA, this.slotB, this.slotC)
     } else {
       this.toastr.error('Per poter continuare è necessario inserire una moneta', 'Denaro Insufficiente', {
@@ -99,30 +106,20 @@ export class SlotMachineComponent implements AfterViewInit {
         toastClass: "alert alert-danger alert-with-icon",
         positionClass: 'toast-top-right'
       });
-      //this.generalService.closeSession()
+      //console.log(clickSessione)
+      //this.generalService.closeSession(clickSessione)
     }
     if (this.coin === 0) {
       this.buttonDisable = true;
     }
   }
 
-  addSlots(jqo: ElementRef) {
-    var ctr = Math.floor(Math.random() * this.opts.length);
-
-    jqo.nativeElement["innerHTML"] = "";
-    jqo.nativeElement.insertAdjacentHTML(
-      "beforeend",
-      "<div class='slot' data-element= " + this.opts_img[ctr].split("/").pop() + "><img src='" +
-      this.opts_img[ctr] +
-      "' style='vertical-align: super !important;border-style: none; margin-top: 2px; margin-left: -2px;'></div>"
-    );
-  }
 
   checkWin(A: ElementRef, B: ElementRef, C: ElementRef) {
     let number = 0,
-      elemA = A.nativeElement.lastChild.getAttribute('data-element'),
-      elemB = B.nativeElement.lastChild.getAttribute('data-element'),
-      elemC = C.nativeElement.lastChild.getAttribute('data-element')
+      elemA = A.nativeElement.getAttribute('data-result'),
+      elemB = B.nativeElement.getAttribute('data-result'),
+      elemC = C.nativeElement.getAttribute('data-result')
 
     if (elemA === elemB && elemB === elemC) {
       number = 3;
@@ -140,6 +137,7 @@ export class SlotMachineComponent implements AfterViewInit {
   }
 
   addWinCoin(elem, number) {
+    console.log("Elem: ", elem);
     let moneteVinte = 0;
     const winToast = (moneteVinteToas) => {
       this.toastr.success('Hai vinto : ' + moneteVinteToas + ' monete', 'Complimenti', {
@@ -151,22 +149,22 @@ export class SlotMachineComponent implements AfterViewInit {
       });
     }
     switch (elem) {
-      case "bar.png": {
-        moneteVinte = 6 * number;
-        winToast(moneteVinte)
-        break;
-      }
-      case "limone.png": {
+      case "6": {
         moneteVinte = 4 * number;
         winToast(moneteVinte)
         break;
       }
-      case "melone.png": {
+      case "5": {
+        moneteVinte = 3 * number;
+        winToast(moneteVinte)
+        break;
+      }
+      case "4": {
         moneteVinte = 2 * number;
         winToast(moneteVinte)
         break;
       }
-      case "banana.png": {
+      case "3": {
         if (number === 3) {
           moneteVinte = 1 * number;
           winToast(moneteVinte)
@@ -175,7 +173,7 @@ export class SlotMachineComponent implements AfterViewInit {
         }
         break;
       }
-      case "arancia.png": {
+      case "2": {
         if (number === 3) {
           moneteVinte = 1 * number;
           winToast(moneteVinte)
@@ -184,7 +182,7 @@ export class SlotMachineComponent implements AfterViewInit {
         }
         break;
       }
-      case "amarene.png": {
+      case "1": {
         if (number === 3) {
           moneteVinte = 1 * number;
           winToast(moneteVinte)
@@ -196,12 +194,11 @@ export class SlotMachineComponent implements AfterViewInit {
     }
 
     if (moneteVinte > 0) {
-      this.coin += moneteVinte
-      this.buttonDisable = false;
-
+      this.coin += moneteVinte;
     } else {
-      this.buttonDisable = false;
+
     }
+    Window['spinAvaiable'] = true;
 
   }
 
@@ -214,20 +211,31 @@ export class SlotMachineComponent implements AfterViewInit {
     return items;
   }
 
-  _startSession(durationSession : number){
+  _startSession(durationSession: number) {
     if (this.firstPlay) {
       this.config = { leftTime: durationSession }
       this.firstPlay = false;
     }
-    setTimeout(() => {
-      console.log("Chiusura obbligatoria sessione")
 
-      //blocco tutto
-      this.lockAdmin = true;
+    if (!this.timerAvviato) {
+      this.timerAvviato = true;
+      setTimeout(() => {
+        console.log("Chiusura obbligatoria sessione")
+        this.lockAdmin = true;
+        this.toastr.warning('Chiusura obbligatoria della sessione', 'Contatta l\'admin di sistema per sbloccare la slot', {
+          timeOut: 5000,
+          enableHtml: true,
+          closeButton: true,
+          toastClass: "alert alert-warning toast-x-large",
+          positionClass: 'toast-top-center'
+        });
 
-      //salvo tempo davanti maccchina sul db
-    }, durationSession*1000)
+        console.log(this.clickSessione)
+        this.timerAvviato = false;
+        //salvo tempo davanti maccchina sul db
+      }, durationSession * 1000)
+    }
   }
 
-  
+
 }
