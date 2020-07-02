@@ -89,6 +89,7 @@ export class SlotMachineComponent implements AfterViewInit {
                 });
                 window.clearInterval(this.intervalId);
                 this.intervalGo = false;
+                this.config = { leftTime: 0 }
               }else{
                 this.generalService.simpleUpdate(this.idCurrentFace, {tassoLudo : tot});
               }
@@ -113,7 +114,6 @@ export class SlotMachineComponent implements AfterViewInit {
     this.idCurrentFace = this.cameraComponent.detectionsFace.nativeElement.dataset['value']
     if (this.idCurrentFace) {
       this.generalService.addMoney(this.idCurrentFace, coin)
-
       //apro sessione
       let sessionActive = this.generalService.openSession(this.idCurrentFace)
     }

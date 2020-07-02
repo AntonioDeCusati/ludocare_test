@@ -82,7 +82,8 @@ totalClick: 0
           console.log('No such document!');
         } else {
           let currentDate = new Date();
-          var sameDate = this.datesAreOnSameDay(currentDate, doc.data().lastDayPlaying)
+          var sameDate = this.datesAreOnSameDay(currentDate, new Date(doc.data().lastDayPlaying))
+          console.log("check giorno, i giorni sono diversi? : " ,sameDate)
           if (!sameDate) {
             let totalDay = doc.data().totDayPlaying + 1
             faceRefLast.update({ lastDetect: currentMillis, lastDayPlaying: currentDate, totDayPlaying: totalDay })
@@ -92,7 +93,7 @@ totalClick: 0
         }
       })
       .catch(err => {
-        //console.log('Error getting document', err);
+        console.log('Error getting document', err);
       });
 
 
@@ -149,7 +150,8 @@ totalClick: 0
             return 100;
           case 'angry':
             return 100;
-
+          default :
+          return 10
         }
       }else {
         return 0
@@ -164,10 +166,13 @@ totalClick: 0
     let par1 = this.convertMiliseconds(obj.totalMillisPlay, "m") / obj.totDayPlaying;
     let par2 = obj.totalMoney/ obj.totDayPlaying ;
     let par3 = obj.primaryEmotion ? getValueEmotion(obj.primaryEmotion) : 10;
-    let par4 = this.convertMiliseconds(obj.totalMillisPlay , "s") / obj.totalClick;
+    let preventInfinity = obj.totalClick === 0 ? 1 : obj.totalClick; 
+    let par4 = preventInfinity / this.convertMiliseconds(obj.totalMillisPlay , "s") ;
 
     tot = risPerc(par1, 20) + risPerc(par2, 40) + risPerc(par3, 20) + risPerc(par4, 20);
-
+    if(!tot || tot == 'NaN'){
+      tot = 0;
+    }
     return tot;
   }
 

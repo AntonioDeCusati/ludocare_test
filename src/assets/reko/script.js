@@ -38,7 +38,6 @@ var currentPerson, lastPerson, lastFaceDescriptor, currentFaceDescriptor,
 	xA, xB, xC,
 	voltoSalvato = false,
 	lastPrimaryEmotion,
-	currentPrimaryEmotion = "",
 	valuePrimaryEmotion = 0,
 	isTemp = false;
 Window['spinAvaiable'] = true; // utilizzate per calcolare il rate del click
@@ -86,7 +85,6 @@ if (video) {
 
 		setInterval(async () => {
 			refreshData();
-			currentPrimaryEmotion = "";
 			valuePrimaryEmotion = 0;
 
 			var detections = await faceapi.detectAllFaces(video, option).withFaceLandmarks().withFaceExpressions().withAgeAndGender().withFaceDescriptors()
@@ -110,7 +108,6 @@ if (video) {
 							sessionOpened = false;
 							Window['clickInSession'] = 0;
 							lastPerson = undefined;
-							currentPrimaryEmotion = "";
 							valuePrimaryEmotion = 0;
 							let canvasN = document.getElementById("canvasClr");
 							let ctx = canvasN.getContext('2d');
@@ -138,6 +135,8 @@ if (video) {
 				var drawBox = new faceapi.draw.DrawBox(box, { label: bestMatch.label })
 
 				if (bestMatch.label === "unknown") {
+					
+					currentPrimaryEmotion = "";
 					//Faccio saltare la prima volta per non creare troppi volti qualora esistesse gia
 					if (volte < 10) {
 						console.info("Volto non riconosciuto ma non salvato, al prossimo giro lo salvo");
@@ -164,14 +163,14 @@ if (video) {
 									lastDetect: currentMill,
 									totalMillisPlay: 0,
 									totalMoney: 0,
-									lastDayPlaying: currentDate,
+									lastDayPlaying: currentMill,
 									firstDayPlaying: currentDate,
 									totDayPlaying: 1,
 									descriptor: Array.from(tempFace.descriptor),
 									expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
 									ludopatico: false,
 									totalClick: 0,
-									primaryEmotion : ""
+									primaryEmotion: "neutral"
 								}
 							).then(ref => {
 								//detectionsFace 
@@ -205,20 +204,32 @@ if (video) {
 					} else {
 
 						if (lastPerson === bestMatch.label) {
-							let faceRefLast = db.collection(dbUsed).doc(lastPerson);
 							if (faces[0].expressions['neutral'] > '0.40' && faces[0].expressions['neutral'] < '0.90') {
 								delete faces[0].expressions['neutral'];
 							}
-							//aggiorno solo le emozioni se l'emozione primaria cambia
+							//aggiorno le emozioni
 							Object.keys(faces[0].expressions).forEach(doc => {
 								if (faces[0].expressions[doc] > valuePrimaryEmotion) {
 									valuePrimaryEmotion = faces[0].expressions[doc];
 									currentPrimaryEmotion = doc;
-									if (!lastPrimaryEmotion) {
-										lastPrimaryEmotion === currentPrimaryEmotion
+								}
+							})
+
+							let faceRefLast = db.collection(dbUsed).doc(lastPerson);
+							faceRefLast.get().then(doc => {
+								if (!doc.exists) {
+									console.log('No such document!');
+								} else {
+									if (currentPrimaryEmotion && doc.data().primaryEmotion !== currentPrimaryEmotion) {
+										faceRefLast.update({ primaryEmotion: currentPrimaryEmotion });
 									}
 								}
 							})
+								.catch(err => {
+									//console.log('Error getting document', err);
+
+								});
+
 							lastPerson = bestMatch.label;
 
 							if (!sessionOpened) {
@@ -228,25 +239,11 @@ if (video) {
 							//apro Sessione
 							sessionOpened = true;
 
-							faceRefLast.get()
-								.then(doc => {
-									if (!doc.exists) {
-										console.log('No such document!');
-									} else {
-										let faceRefNew = db.collection(dbUsed).doc(lastPerson);
-										let lastExpressions = JSON.parse(JSON.stringify(resizedDetections[0].expressions));
-										if (lastPrimaryEmotion === currentPrimaryEmotion) {
-											faceRefNew.update({ expressions: lastExpressions, primaryEmotion:  currentPrimaryEmotion});
-										}
-									}
-								})
-								.catch(err => {
-									console.log('Error getting document', err);
-								});
+
 
 						} else {
 							//console.log("Persona diversa che è stata gia riconosciuta, salvo le operazioni")
-							currentPrimaryEmotion = "";
+							
 							valuePrimaryEmotion = 0;
 							let currentMill = new Date().getTime();
 							let faceRefLast = db.collection(dbUsed).doc(lastPerson);
@@ -296,12 +293,12 @@ if (video) {
 							lastDetect: currentMill,
 							totalMillisPlay: 0,
 							totalMoney: 0,
-							lastDayPlaying: currentDate,
+							lastDayPlaying: currentMill,
 							firstDayPlaying: currentDate,
 							totDayPlaying: 1,
 							ludopatico: false,
 							totalClick: 0,
-							primaryEmotion : ""
+							primaryEmotion: "neutral"
 						}
 					).then(ref => {
 						let faceRef = db.collection(dbUsed).doc(ref.id);
