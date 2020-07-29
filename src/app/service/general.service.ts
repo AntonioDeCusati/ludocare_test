@@ -28,26 +28,6 @@ export class GeneralService {
     return this.usersRef;
   }
 
-  /*
-  {
-          id: "temp",
-age: tempFace.age,
-score: tempFace.detection.score,
-gender: tempFace.gender,
-genderProbability: tempFace.genderProbability,
-lastDetect: currentMill,
-totalMillisPlay : 0,
-totalMoney: 0,
-lastDayPlaing: currentDate ,
-firstDayPlaing: currentDate ,
-totDayPlaing :1,
-descriptor: Array.from(tempFace.descriptor),
-expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
-ludopatico: false,
-totalClick: 0
-  }
-          */
-
   saveLastOperation(data: any): any {
     return new Promise<any>((resolve, reject) => {
       this.usersRef
@@ -163,14 +143,21 @@ totalClick: 0
       return (val * perc) / 100
     }
 
-    let par1 = this.convertMiliseconds(obj.totalMillisPlay, "m") / obj.totDayPlaying;
-    let par2 = obj.totalMoney/ obj.totDayPlaying ;
+    let preventInfinity = (obj) =>{
+      if (!obj || obj === 0 || !isFinite(tot)){
+        return 1;
+      } else {
+        return obj;
+      }
+    }
+
+    let par1 = this.convertMiliseconds(preventInfinity(obj.totalMillisPlay), "m") / preventInfinity(obj.totDayPlaying);
+    let par2 = preventInfinity(obj.totalMoney) / preventInfinity(obj.totDayPlaying) ;
     let par3 = obj.primaryEmotion ? getValueEmotion(obj.primaryEmotion) : 10;
-    let preventInfinity = obj.totalClick === 0 ? 1 : obj.totalClick; 
-    let par4 = preventInfinity / this.convertMiliseconds(obj.totalMillisPlay , "s") ;
+    let par4 = preventInfinity(obj.totalClick) / this.convertMiliseconds(obj.totalMillisPlay , "s") ;
 
     tot = risPerc(par1, 20) + risPerc(par2, 40) + risPerc(par3, 20) + risPerc(par4, 20);
-    if(!tot || tot == 'NaN'){
+    if(!tot || tot == 'NaN' || !isFinite(tot) ){
       tot = 0;
     }
     return tot;

@@ -18,7 +18,7 @@ import { SlotMachineComponent } from '../../slot-machine/slot-machine.component'
 import { CameraComponent } from '../../camera/camera.component';
 import { CountdownModule } from 'ngx-countdown';
 import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
-
+import { LoginComponent } from '../../login/login.component'
 @NgModule({
   imports: [
     CommonModule,
@@ -40,7 +40,8 @@ import { Ng4LoadingSpinnerModule } from 'ng4-loading-spinner';
     IconsComponent,
     MapsComponent,
     NotificationsComponent,
-    CameraComponent
+    CameraComponent,
+    LoginComponent
   ]
 })
 

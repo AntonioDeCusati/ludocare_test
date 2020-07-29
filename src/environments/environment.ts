@@ -14,5 +14,9 @@ export const environment = {
     messagingSenderId: "963387545552",
     appId: "1:963387545552:web:8e2155592bc078a9ba4bd5",
     measurementId: "G-BCQWPJBVFR"
-  }
+  },
+  sessionMinute: 600, //600 = 10 min
+  tassoLudopatia : 70,
+  user: "admin",
+  password: "Nesea01" 
 };

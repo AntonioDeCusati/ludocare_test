@@ -1,0 +1,27 @@
+<div class="login-page" [@routerTransition] style="position: fixed;">
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <img src="assets/img/logo.png" width="150px" class="user-avatar" />
+            <h1 class ="neseaColor"><b>FaceRec Login</b></h1>
+            <form role="form" (keydown.enter)="onKeydown($event,email,password)">
+                <div class="form-content pb-0">
+                    <div class="form-group" >
+                        <input type="text" #email (ngModel)="email" name="email" (change)="refreshButton()"
+                        class="form-control input-underline input-lg"  placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" #password 
+                        name="password" ngModel="password" (change)="refreshButton()"
+                        class="form-control input-underline input-lg" 
+                         required placeholder="Password">
+                    </div>
+                </div>   
+                <div [ngClass]="showError == true ? 'visible' : 'invisible'">
+                    <div class="alert alert-danger" >{{message}}</div>
+                </div>
+                <a class="btn rounded-btn btn-rounded-nesea" [ngClass]="showLoader ? 'disabled' : ''" (click)="onLoggedin(email,password)"> Log in </a>
+                
+             </form>
+        </div>
+    </div>
+</div>

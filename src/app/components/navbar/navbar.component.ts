@@ -37,6 +37,13 @@ export class NavbarComponent implements OnInit {
      });
     }
 
+    logout(){
+      this.router.navigate(['/login']);
+      localStorage.setItem('isLoggedin', 'false');
+    }
+
+
+
     collapse(){
       this.isCollapsed = !this.isCollapsed;
       const navbar = document.getElementsByTagName('nav')[0];

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef, Renderer2 } from '@ang
 import { Subject, Observable, interval, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GeneralService } from '../service/general.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,21 +21,24 @@ export class DashboardComponent implements OnInit {
 
   subscription: Subscription;
 
-  constructor(private renderer: Renderer2, private generalService: GeneralService) { }
+  constructor(private renderer: Renderer2, private generalService: GeneralService,public router: Router) { }
 
   ngOnInit() {
-    this.generalService.getUsersList().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({ key: c.payload.doc.id, ...c.payload.doc.data() })
+    if(localStorage.getItem('isLoggedin') == 'true'){
+      this.generalService.getUsersList().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({ key: c.payload.doc.id, ...c.payload.doc.data() })
+          )
         )
-      )
-    ).subscribe(users => {
-      this.faces = users;
-
-    })
-
-
+      ).subscribe(users => {
+        this.faces = users;
+  
+      })
+    }else{
+      this.router.navigateByUrl('/login');
+    }
+    
   }
 
   ngAfterViewInit(): void {

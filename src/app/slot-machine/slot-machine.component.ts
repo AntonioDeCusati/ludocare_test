@@ -6,6 +6,8 @@ import { CameraComponent } from '../camera/camera.component';
 import { CountdownComponent } from 'ngx-countdown';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 import { Template } from '@angular/compiler/src/render3/r3_ast';
+import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 
 Window['clickInSession'] = 0; // utilizzate per calcolare il rate del click
@@ -15,16 +17,17 @@ Window['spinAvaiable'] = true; // utilizzate per calcolare il rate del click
   templateUrl: `./slot-machine.component.html`,
   styleUrls: ["./slot-machine.component.scss"]
 })
-export class SlotMachineComponent implements AfterViewInit {
+export class SlotMachineComponent implements AfterViewInit, OnInit {
   @ViewChild("slotA", { static: false }) slotA: ElementRef;
   @ViewChild("slotB", { static: false }) slotB: ElementRef;
   @ViewChild("slotC", { static: false }) slotC: ElementRef;
   @ViewChild(CameraComponent, { static: false }) cameraComponent: CameraComponent;
   @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
 
+  
   config;
   coin: number = 0;
-  durationSessionConfig: number = 60; //600 = 10 min
+  durationSessionConfig: number = environment.sessionMinute;
   buttonDisable = true;
   sessionActive = false;
   counterMin = 0;
@@ -36,6 +39,7 @@ export class SlotMachineComponent implements AfterViewInit {
   idCurrentFace;
   intervalGo = false;
   intervalId;
+  tassoLudopatia : number = environment.tassoLudopatia;
 
 
 
@@ -55,10 +59,15 @@ export class SlotMachineComponent implements AfterViewInit {
   ];
 
   constructor(private toastr: ToastrService, private generalService: GeneralService,
-    private renderer: Renderer2, private spinnerService: Ng4LoadingSpinnerService) {
+    private renderer: Renderer2, private spinnerService: Ng4LoadingSpinnerService,public router: Router) {
     this.spinnerService.show();
   }
 
+  ngOnInit(){
+    if(localStorage.getItem('isLoggedin') == 'false'){
+      this.router.navigateByUrl('/login');
+    }
+  }
   ngAfterViewInit() {
     this.checkLudopatic();
   }
@@ -76,7 +85,7 @@ export class SlotMachineComponent implements AfterViewInit {
             } else {
               let tot = this.generalService.calcolaLudo(doc.data());
               console.log("TOT: ",tot);
-              if(tot > 70){
+              if(tot > this.tassoLudopatia){
                 this.generalService.simpleUpdate(this.idCurrentFace,{ ludopatico : true, tassoLudo : tot})
                 Window['isLudopatico'] = true;
                 this.lockAdmin = true;

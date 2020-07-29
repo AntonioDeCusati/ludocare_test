@@ -18,6 +18,7 @@ import { AngularFireAuthModule } from "@angular/fire/auth";
 import { environment } from '../environments/environment';
 
 import { CountdownModule } from 'ngx-countdown';
+import { AuthGuard } from '../app/shared/guard/auth.guard';
 
 import { AppComponent } from './app.component';
 @NgModule({
@@ -41,7 +42,7 @@ import { AppComponent } from './app.component';
     AppComponent,
     AdminLayoutComponent
   ],
-  providers: [{ provide: FirestoreSettingsToken, useValue: {} }],
+  providers: [AuthGuard,{ provide: FirestoreSettingsToken, useValue: {} }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

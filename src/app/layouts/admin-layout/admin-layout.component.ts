@@ -16,6 +16,8 @@ export class AdminLayoutComponent implements OnInit {
   private _router: Subscription;
   private lastPoppedUrl: string;
   private yScrollStack: number[] = [];
+  barVisible : Boolean = true;
+
 
   constructor( public location: Location, private router: Router) {}
 

@@ -87,10 +87,10 @@
                     {{ face.ludopatico ? "A Rischio" : "Nessun Pericolo"}}
                   </td>
                   <td>
-                    {{ face.tassoLudo }}
+                    {{ face.tassoLudo | number: '1.0-0' }}
                   </td>
                   <td>
-                    {{ this.convertMiliseconds(face.totalMillisPlay , "s") / face.totalClick | number: '1.1-2'}}
+                    {{ face.totalClick > 0 ? this.convertMiliseconds(face.totalMillisPlay , "s") / face.totalClick : 0 | number: '1.1-2'}}
                   </td>
                   <td>
                     {{face.totalMoney / this.convertMiliseconds(face.totalMillisPlay , "m") }}

@@ -161,15 +161,15 @@ if (video) {
 									gender: tempFace.gender,
 									genderProbability: tempFace.genderProbability,
 									lastDetect: currentMill,
-									totalMillisPlay: 0,
-									totalMoney: 0,
+									totalMillisPlay: 1,
+									totalMoney: 1,
 									lastDayPlaying: currentMill,
 									firstDayPlaying: currentDate,
 									totDayPlaying: 1,
 									descriptor: Array.from(tempFace.descriptor),
 									expressions: JSON.parse(JSON.stringify(tempFace.expressions)),
 									ludopatico: false,
-									totalClick: 0,
+									totalClick: 1,
 									primaryEmotion: "neutral"
 								}
 							).then(ref => {
@@ -256,8 +256,8 @@ if (video) {
 										let totalMillisPlay = (currentMill - doc.data().lastDetect) + doc.data().totalMillisPlay;
 										let totalClick = doc.data().totalClick + Window['clickInSession'];
 										faceRefLast.update({ totalMillisPlay: totalMillisPlay, totalClick: totalClick });
-										let totMinCovert = convertMiliseconds(totalMillisPlay, "m")
-										console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " minuti")
+										let totMinCovert = convertMiliseconds(totalMillisPlay, "s")
+										console.log("L' utente : " + lastPerson + " ha giocato per un totale di " + totMinCovert + " secondi")
 
 										lastPerson = bestMatch.label;
 										let faceRefNew = db.collection(dbUsed).doc(lastPerson);
@@ -291,13 +291,13 @@ if (video) {
 							gender: tempFace.gender,
 							genderProbability: tempFace.genderProbability,
 							lastDetect: currentMill,
-							totalMillisPlay: 0,
-							totalMoney: 0,
+							totalMillisPlay: 1,
+							totalMoney: 1,
 							lastDayPlaying: currentMill,
 							firstDayPlaying: currentDate,
 							totDayPlaying: 1,
 							ludopatico: false,
-							totalClick: 0,
+							totalClick: 1,
 							primaryEmotion: "neutral"
 						}
 					).then(ref => {
