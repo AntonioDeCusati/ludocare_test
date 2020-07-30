@@ -93,14 +93,8 @@
                     {{ face.totalClick > 0 ? this.convertMiliseconds(face.totalMillisPlay , "s") / face.totalClick : 0 | number: '1.1-2'}}
                   </td>
                   <td>
-                    {{face.totalMoney / this.convertMiliseconds(face.totalMillisPlay , "m") }}
+                    {{face.totalMoney / this.convertMiliseconds(face.totalMillisPlay , "m") === 0 ? 1 : this.convertMiliseconds(face.totalMillisPlay , "m")   }}
                   </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
                 </tr>
 
               </tbody>
