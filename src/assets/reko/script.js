@@ -135,10 +135,10 @@ if (video) {
 				var drawBox = new faceapi.draw.DrawBox(box, { label: bestMatch.label })
 
 				if (bestMatch.label === "unknown") {
-					
+
 					currentPrimaryEmotion = "";
 					//Faccio saltare la prima volta per non creare troppi volti qualora esistesse gia
-					if (volte < 10) {
+					if (volte < 20) {
 						console.info("Volto non riconosciuto ma non salvato, al prossimo giro lo salvo");
 						volte += 1;
 						voltoSalvato = true;
@@ -173,7 +173,7 @@ if (video) {
 									primaryEmotion: "neutral"
 								}
 							).then(ref => {
-								//detectionsFace 
+								//detectionsFace
 								isTemp = false;
 								let faceRef = db.collection(dbUsed).doc(ref.id);
 								faceRef.update({ id: ref.id, label: ref.id });
@@ -243,7 +243,7 @@ if (video) {
 
 						} else {
 							//console.log("Persona diversa che è stata gia riconosciuta, salvo le operazioni")
-							
+
 							valuePrimaryEmotion = 0;
 							let currentMill = new Date().getTime();
 							let faceRefLast = db.collection(dbUsed).doc(lastPerson);
@@ -316,7 +316,7 @@ if (video) {
 			}
 
 
-		}, 500) //metterò 250 forse
+		}, 700) //metterò 250 forse
 	})
 
 

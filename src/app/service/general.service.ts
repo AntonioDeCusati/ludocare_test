@@ -91,7 +91,7 @@ export class GeneralService {
           console.log('No such document!');
         } else {
           let totalMillisPlay = (currentMillis - doc.data().lastDetect) + doc.data().totalMillisPlay;
-          faceRefLast.update({ totalMillisPlay: totalMillisPlay, lastDetect: currentMillis }); //aggiunto lastDetect per sistemare il bug della sessione 
+          faceRefLast.update({ totalMillisPlay: totalMillisPlay, lastDetect: currentMillis }); //aggiunto lastDetect per sistemare il bug della sessione
           //nello specifico il lasso di tempo della giocata veniva calcolato due volte qualora la sessione di gioco fosse finita
           let totMinCovert = this.convertMiliseconds(totalMillisPlay, "m")
           console.log("L' utente : " + doc.data().id + " ha giocato per un totale di " + totMinCovert + " minuti")
@@ -106,12 +106,12 @@ export class GeneralService {
   }
 
 
-  
+
 
   calcolaLudo(obj){
-     //((MinutiTotali/GiorniTotali *20 /100) + ((denaroTotale * 40) /100) + 
+     //((MinutiTotali/GiorniTotali *20 /100) + ((denaroTotale * 40) /100) +
      //((espressioneDominante*20) /100) + ((clickSecondo *20) / 10)
-   
+
     let tot;
     let getValueEmotion = (dominantExpr) => {
       if (dominantExpr) {
@@ -120,7 +120,7 @@ export class GeneralService {
             return 10;
           case 'happy':
             return 20;
-          case 'surprise':
+          case "surprised":
             return 20;
           case 'fearful':
             return 40;
@@ -144,7 +144,7 @@ export class GeneralService {
     }
 
     let preventInfinity = (obj) =>{
-      if (!obj || obj === 0 || !isFinite(tot)){
+      if (!obj || obj == 0 || !isFinite(obj)){
         return 1;
       } else {
         return obj;

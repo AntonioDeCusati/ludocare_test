@@ -24,7 +24,7 @@ export class SlotMachineComponent implements AfterViewInit, OnInit {
   @ViewChild(CameraComponent, { static: false }) cameraComponent: CameraComponent;
   @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
 
-  
+
   config;
   coin: number = 0;
   durationSessionConfig: number = environment.sessionMinute;
@@ -84,7 +84,7 @@ export class SlotMachineComponent implements AfterViewInit, OnInit {
               console.log('No such document!');
             } else {
               let tot = this.generalService.calcolaLudo(doc.data());
-              console.log("TOT: ",tot);
+              console.log("TOT: " + tot + " - dati utilizzati",doc.data());
               if(tot > this.tassoLudopatia){
                 this.generalService.simpleUpdate(this.idCurrentFace,{ ludopatico : true, tassoLudo : tot})
                 Window['isLudopatico'] = true;
@@ -104,7 +104,7 @@ export class SlotMachineComponent implements AfterViewInit, OnInit {
               }
             }
           })
-         
+
         }
       }, 2000)
     }
@@ -145,7 +145,7 @@ export class SlotMachineComponent implements AfterViewInit, OnInit {
     //controllo se la persona è ludopatica
     Window['clickInSession'] += 1;
     this.spinFunc()
-        
+
   }
 
   spinFunc() {
